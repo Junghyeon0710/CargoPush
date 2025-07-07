@@ -2,6 +2,8 @@
 
 
 #include "ValueGauge.h"
+
+#include "AbilitySystemComponent.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
@@ -13,8 +15,27 @@ void UValueGauge::NativePreConstruct()
 	
 }
 
+void UValueGauge::SetAndBoundToGameplayAttribute(UAbilitySystemComponent* AbilitySystemComp, const FGameplayAttribute& Attribute, const FGameplayAttribute& MaxAttribute)
+{
+	if (AbilitySystemComp)
+	{
+		bool bFound;
+		float Value = AbilitySystemComp->GetGameplayAttributeValue(Attribute, bFound);
+		float MaxValue = AbilitySystemComp->GetGameplayAttributeValue(MaxAttribute, bFound);
+		if (bFound)
+		{
+			SetValue(Value, MaxValue);
+		}
+
+		AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(this, &ThisClass::ValueChanged);
+		AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(MaxAttribute).AddUObject(this, &ThisClass::MaxValueChanged);
+	}
+}
+
 void UValueGauge::SetValue(float NewValue, float NewMaxValue)
 {
+	CachedValue = NewValue;
+	CachedMaxValue = NewMaxValue;
 	if (NewMaxValue == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Value is zero"));
@@ -33,4 +54,15 @@ void UValueGauge::SetValue(float NewValue, float NewMaxValue)
 			FText::AsNumber(NewMaxValue, &FormatOps)
 			)
 		);
+}
+
+void UValueGauge::ValueChanged(const FOnAttributeChangeData& ChangeData)
+{
+	SetValue(ChangeData.NewValue, CachedMaxValue);
+}
+
+void UValueGauge::MaxValueChanged(const FOnAttributeChangeData& ChangeData)
+{
+	SetValue(CachedValue, ChangeData.NewValue);
+	
 }
