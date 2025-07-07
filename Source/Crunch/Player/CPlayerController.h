@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "CPlayerController.generated.h"
 
+class UGameplayWidget;
 class ACPlayerCharacter;
 /**
  * 
@@ -22,7 +23,14 @@ public:
 	virtual void AcknowledgePossession(class APawn* P) override;
 	
 private:
+	void SpawnGameplayWidget();
 	
 	UPROPERTY()
 	TObjectPtr<ACPlayerCharacter> CPlayerCharacter;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UGameplayWidget> GameplayWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UGameplayWidget> GameplayWidget;
 };

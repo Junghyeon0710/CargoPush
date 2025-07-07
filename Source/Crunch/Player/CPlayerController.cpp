@@ -2,7 +2,7 @@
 
 
 #include "CPlayerController.h"
-
+#include "Crunch/Widgets/GameplayWidget.h"
 #include "CPlayerCharacter.h"
 
 void ACPlayerController::OnPossess(APawn* InPawn)
@@ -23,5 +23,20 @@ void ACPlayerController::AcknowledgePossession(class APawn* P)
 	if (CPlayerCharacter)
 	{
 		CPlayerCharacter->ClientSideInit();
+		SpawnGameplayWidget();
+	}
+}
+
+void ACPlayerController::SpawnGameplayWidget()
+{
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
+
+	GameplayWidget = CreateWidget<UGameplayWidget>(this, GameplayWidgetClass);
+	if (GameplayWidget)
+	{
+		GameplayWidget->AddToViewport();
 	}
 }
