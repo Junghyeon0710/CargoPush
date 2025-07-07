@@ -3,8 +3,10 @@
 
 #include "CCharacter.h"
 
+#include "Components/WidgetComponent.h"
 #include "Crunch/GAS/CAbilitySystemComponent.h"
 #include "Crunch/GAS/CAttributeSet.h"
+#include "Crunch/Widgets/OverHeadStatsGauge.h"
 
 ACCharacter::ACCharacter()
 {
@@ -13,6 +15,10 @@ ACCharacter::ACCharacter()
 
 	CAbilitySystemComponent = CreateDefaultSubobject<UCAbilitySystemComponent>("CAbilitySystem Component");
 	CAttributeSet = CreateDefaultSubobject<UCAttributeSet>("Attributes");
+
+	OverHeadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("Over Head WidgetComponent");
+	OverHeadWidgetComponent->SetupAttachment(GetRootComponent());
+	
 }
 
 void ACCharacter::ServerSideInit()
@@ -29,7 +35,7 @@ void ACCharacter::ClientSideInit()
 void ACCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	ConfigureOverHeadStatusWidget();
 }
 
 void ACCharacter::Tick(float DeltaTime)
@@ -47,5 +53,19 @@ void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 UAbilitySystemComponent* ACCharacter::GetAbilitySystemComponent() const
 {
 	return CAbilitySystemComponent;
+}
+
+void ACCharacter::ConfigureOverHeadStatusWidget()
+{
+	if (!OverHeadWidgetComponent)
+	{
+		return;
+	}
+	
+	UOverHeadStatsGauge* OverHeadStatsGauge = Cast<UOverHeadStatsGauge>(OverHeadWidgetComponent->GetUserWidgetObject());
+	if (OverHeadStatsGauge)
+	{
+		OverHeadStatsGauge->ConfigureWithASC(GetAbilitySystemComponent());
+	}
 }
 

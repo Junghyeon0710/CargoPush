@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CCharacter.generated.h"
 
+class UWidgetComponent;
 class UCAttributeSet;
 class UCAbilitySystemComponent;
 
@@ -43,4 +44,13 @@ private:
 	UPROPERTY()
 	TObjectPtr<UCAttributeSet> CAttributeSet;
 
+	/********************************************************/
+	/*					/** UI *							*/
+	/********************************************************/
+
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
+	TObjectPtr<UWidgetComponent> OverHeadWidgetComponent;
+
+	void ConfigureOverHeadStatusWidget();
 };
