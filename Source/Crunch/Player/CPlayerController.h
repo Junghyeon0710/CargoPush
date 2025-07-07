@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "CPlayerController.generated.h"
 
+class ACPlayerCharacter;
 /**
  * 
  */
@@ -13,5 +14,15 @@ UCLASS()
 class CRUNCH_API ACPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	//서버에서만 호출
+	virtual void OnPossess(APawn* InPawn) override;
+	// 클라에서만 호출
+	virtual void AcknowledgePossession(class APawn* P) override;
 	
+private:
+	
+	UPROPERTY()
+	TObjectPtr<ACPlayerCharacter> CPlayerCharacter;
 };
