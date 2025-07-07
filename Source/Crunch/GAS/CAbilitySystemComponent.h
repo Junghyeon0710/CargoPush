@@ -15,8 +15,15 @@ class CRUNCH_API UCAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 public:
 	void ApplyInitialEffects();
+	void GiveInitialAbilities();
 private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TArray<TSubclassOf<UGameplayAbility>> Abilities;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TArray<TSubclassOf<UGameplayAbility>> BaseAbilities;
 };
