@@ -20,6 +20,9 @@ public:
 	ACCharacter();
 	void ServerSideInit();
 	void ClientSideInit();
+	bool IsLocallyControlledByPlayer() const;
+	//Only Server
+	virtual void PossessedBy(AController* NewController) override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -49,8 +52,17 @@ private:
 	/********************************************************/
 
 private:
-	UPROPERTY(VisibleDefaultsOnly, Category="Gameplay Ability")
+	UPROPERTY(VisibleDefaultsOnly, Category="UI")
 	TObjectPtr<UWidgetComponent> OverHeadWidgetComponent;
 
 	void ConfigureOverHeadStatusWidget();
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	float HeadStatGaugeVisibilityCheckUpdateGap = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	float HeadStatGaugeVisibilityRangeSquared = 10000000.0f;
+	
+	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
+	void UpdateHeadGaugeVisibility();
 };
