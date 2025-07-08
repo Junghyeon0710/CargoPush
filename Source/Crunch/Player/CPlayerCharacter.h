@@ -6,6 +6,7 @@
 #include "Crunch/Character/CCharacter.h"
 #include "CPlayerCharacter.generated.h"
 
+enum class ECAbilityInputID : uint8;
 struct FInputActionValue;
 /**
  * 
@@ -27,6 +28,14 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
 	class UCameraComponent* ViewCamera;
 
+	FVector GetLookRightDir() const;
+	FVector GetLookFwdDir() const;
+	FVector GetMoveFwdDir() const;
+
+	/*******************************************************/
+	/*                     Input						   */
+	/*******************************************************/
+
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputMappingContext* DefaultContext;
 
@@ -38,13 +47,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TMap<ECAbilityInputID, TObjectPtr<UInputAction>> GameplayAbilityInputActions;
 	
 private:
 
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
-
-	FVector GetLookRightDir() const;
-	FVector GetLookFwdDir() const;
-	FVector GetMoveFwdDir() const;
+	void HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID InputID);
 };
