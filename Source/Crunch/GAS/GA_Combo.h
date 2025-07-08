@@ -20,8 +20,15 @@ class CRUNCH_API UGA_Combo : public UCGameplayAbility
 public:
 	UGA_Combo();
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
+	static FGameplayTag GetComboChangedEventTag();
+	static FGameplayTag GetComboChangedEventEndTag();
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> ComboMontage;
+
+	UFUNCTION()
+	void ComboChangeEventReceived(FGameplayEventData Data);
+
+	FName NextComboName;
 };
