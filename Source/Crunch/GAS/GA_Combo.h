@@ -31,6 +31,14 @@ private:
 	void HandleInputPress(float TimeWaited);
 
 	void TryCommitCombo();
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect")
+	TSubclassOf<UGameplayEffect> DefaultDamageEffec;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect")
+	TMap<FName, TSubclassOf<UGameplayEffect>> DamageEffectMap;
+
+	TSubclassOf<UGameplayEffect> GetDamageEffectForCurrentCombo() const;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> ComboMontage;
