@@ -19,7 +19,6 @@ ACCharacter::ACCharacter()
 
 	OverHeadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("Over Head WidgetComponent");
 	OverHeadWidgetComponent->SetupAttachment(GetRootComponent());
-	
 }
 
 void ACCharacter::ServerSideInit()
