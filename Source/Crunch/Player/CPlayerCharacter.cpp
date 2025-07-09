@@ -7,6 +7,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Crunch/GAS/CAbilitySystemComponent.h"
+#include "Crunch/GAS/UCAbilitySystemStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -23,6 +25,8 @@ ACPlayerCharacter::ACPlayerCharacter()
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.f, 0.f);
+
+	BindGASChangeDelegate();
 }
 
 void ACPlayerCharacter::PawnClientRestart()
@@ -59,6 +63,26 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	}
 }
 
+void ACPlayerCharacter::BindGASChangeDelegate()
+{
+	if (CAbilitySystemComponent)
+	{
+		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ThisClass::DeathTagUpdated);
+	}
+}
+
+void ACPlayerCharacter::DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount)
+{
+	if (NewCount != 0)
+	{
+		StartDeathSequence();
+	}
+	else
+	{
+		Respawn();
+	}
+}
+
 void ACPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
 {
 	FVector2D InputVal = InputActionValue.Get<FVector2D>();
@@ -87,6 +111,16 @@ void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionV
 	{
 		GetAbilitySystemComponent()->AbilityLocalInputReleased((int32)InputID);
 	}
+}
+
+void ACPlayerCharacter::StartDeathSequence()
+{
+	UE_LOG(LogTemp, Display, TEXT("ACPlayerCharacter::StartDeathSequence"));
+}
+
+void ACPlayerCharacter::Respawn()
+{
+	UE_LOG(LogTemp, Display, TEXT("ACPlayerCharacter::Respawn"));
 }
 
 FVector ACPlayerCharacter::GetLookRightDir() const

@@ -40,7 +40,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/* ~Gameplay Ability **/
 	
-private:
+protected:
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;
 
