@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "CCharacter.generated.h"
 
 class UWidgetComponent;
@@ -41,6 +42,9 @@ public:
 	/* ~Gameplay Ability **/
 	
 protected:
+	void BindGASChangeDelegate();
+	void DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
+	
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;
 
@@ -65,4 +69,21 @@ private:
 	
 	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
 	void UpdateHeadGaugeVisibility();
+	void SetStatusGaugeEnabled(bool bIsEnabled);
+		
+		
+	/*******************************************************/
+	/*                 Death and Respawn				   */
+	/*******************************************************/
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
+	void PlayDeathAnimation();
+	
+	void StartDeathSequence();
+	void Respawn();
+
+	virtual void OnDead();
+	virtual void OnRespawn();
 };

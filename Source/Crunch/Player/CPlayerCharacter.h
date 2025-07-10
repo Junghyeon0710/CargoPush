@@ -23,8 +23,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 private:
-	void BindGASChangeDelegate();
-	void DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
+
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
 	class USpringArmComponent* CameraBoom;
@@ -65,6 +64,6 @@ private:
 	/*                 Death and Respawn				   */
 	/*******************************************************/
 
-	void StartDeathSequence();
-	void Respawn();
+	virtual void OnDead() override;
+	virtual void OnRespawn() override;
 };

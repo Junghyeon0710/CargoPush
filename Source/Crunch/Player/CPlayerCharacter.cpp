@@ -25,8 +25,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.f, 0.f);
-
-	BindGASChangeDelegate();
+	
 }
 
 void ACPlayerCharacter::PawnClientRestart()
@@ -63,26 +62,6 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	}
 }
 
-void ACPlayerCharacter::BindGASChangeDelegate()
-{
-	if (CAbilitySystemComponent)
-	{
-		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ThisClass::DeathTagUpdated);
-	}
-}
-
-void ACPlayerCharacter::DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount)
-{
-	if (NewCount != 0)
-	{
-		StartDeathSequence();
-	}
-	else
-	{
-		Respawn();
-	}
-}
-
 void ACPlayerCharacter::HandleLookInput(const FInputActionValue& InputActionValue)
 {
 	FVector2D InputVal = InputActionValue.Get<FVector2D>();
@@ -113,14 +92,22 @@ void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionV
 	}
 }
 
-void ACPlayerCharacter::StartDeathSequence()
+void ACPlayerCharacter::OnDead()
 {
-	UE_LOG(LogTemp, Display, TEXT("ACPlayerCharacter::StartDeathSequence"));
+	APlayerController* PlayerController = GetController<APlayerController>();
+	if (PlayerController)
+	{
+		DisableInput(PlayerController);
+	}
 }
 
-void ACPlayerCharacter::Respawn()
+void ACPlayerCharacter::OnRespawn()
 {
-	UE_LOG(LogTemp, Display, TEXT("ACPlayerCharacter::Respawn"));
+	APlayerController* PlayerController = GetController<APlayerController>();
+	if (PlayerController)
+	{
+		EnableInput(PlayerController);
+	}
 }
 
 FVector ACPlayerCharacter::GetLookRightDir() const
