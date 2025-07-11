@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
+#include "GenericTeamAgentInterface.h"
 #include "CCharacter.generated.h"
 
 class UWidgetComponent;
@@ -13,7 +14,7 @@ class UCAttributeSet;
 class UCAbilitySystemComponent;
 
 UCLASS()
-class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface
+class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,8 @@ public:
 	bool IsLocallyControlledByPlayer() const;
 	//Only Server
 	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -96,4 +99,16 @@ private:
 	
 	void DeathMontageFinished();
 	void SetRagdollEnabled(bool bIsEnabled);
+
+	/*******************************************************/
+	/*                Team								   */
+	/*******************************************************/
+
+public:
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
+private:
+	UPROPERTY(Replicated)
+	FGenericTeamId TeamID;
 };

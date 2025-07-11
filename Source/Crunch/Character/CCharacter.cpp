@@ -11,6 +11,7 @@
 #include "Crunch/Widgets/OverHeadStatsGauge.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 ACCharacter::ACCharacter()
 {
@@ -50,6 +51,13 @@ void ACCharacter::PossessedBy(AController* NewController)
 	{
 		ServerSideInit();
 	}
+}
+
+void ACCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACCharacter, TeamID);
 }
 
 void ACCharacter::BeginPlay()
@@ -204,5 +212,15 @@ void ACCharacter::SetRagdollEnabled(bool bIsEnabled)
 		GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 		GetMesh()->SetRelativeTransform(MeshRelativeTransform);
 	}
+}
+
+void ACCharacter::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	TeamID = NewTeamID;
+}
+
+FGenericTeamId ACCharacter::GetGenericTeamId() const
+{
+	return TeamID;
 }
 

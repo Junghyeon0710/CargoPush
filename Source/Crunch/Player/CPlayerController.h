@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/PlayerController.h"
 #include "CPlayerController.generated.h"
 
@@ -12,7 +13,7 @@ class ACPlayerCharacter;
  * 
  */
 UCLASS()
-class CRUNCH_API ACPlayerController : public APlayerController
+class CRUNCH_API ACPlayerController : public APlayerController, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -21,6 +22,11 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	// 클라에서만 호출
 	virtual void AcknowledgePossession(class APawn* P) override;
+
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
 	void SpawnGameplayWidget();
@@ -33,4 +39,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UGameplayWidget> GameplayWidget;
+
+	UPROPERTY(Replicated)
+	 FGenericTeamId TeamID;
 };
