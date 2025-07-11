@@ -76,6 +76,8 @@ private:
 	/*                 Death and Respawn				   */
 	/*******************************************************/
 
+	FTransform MeshRelativeTransform;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Death")
 	TObjectPtr<UAnimMontage> DeathMontage;
 
@@ -86,4 +88,12 @@ private:
 
 	virtual void OnDead();
 	virtual void OnRespawn();
+	
+	FTimerHandle DeathMontageTimerHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	float DeathMontageFinishTimeShift = -0.8f;
+	
+	void DeathMontageFinished();
+	void SetRagdollEnabled(bool bIsEnabled);
 };
