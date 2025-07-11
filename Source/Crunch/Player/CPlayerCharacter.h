@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Crunch/Character/CCharacter.h"
+#include "GameplayTagContainer.h"
 #include "CPlayerCharacter.generated.h"
 
 enum class ECAbilityInputID : uint8;
@@ -22,6 +23,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 private:
+
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
 	class USpringArmComponent* CameraBoom;
 
@@ -56,4 +59,11 @@ private:
 	void HandleLookInput(const FInputActionValue& InputActionValue);
 	void HandleMoveInput(const FInputActionValue& InputActionValue);
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID InputID);
+
+	/*******************************************************/
+	/*                 Death and Respawn				   */
+	/*******************************************************/
+
+	virtual void OnDead() override;
+	virtual void OnRespawn() override;
 };

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
+#include "GenericTeamAgentInterface.h"
 #include "CCharacter.generated.h"
 
 class UWidgetComponent;
@@ -12,7 +14,7 @@ class UCAttributeSet;
 class UCAbilitySystemComponent;
 
 UCLASS()
-class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface
+class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +25,8 @@ public:
 	bool IsLocallyControlledByPlayer() const;
 	//Only Server
 	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -40,7 +44,10 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/* ~Gameplay Ability **/
 	
-private:
+protected:
+	void BindGASChangeDelegate();
+	void DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
+	
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;
 
@@ -65,4 +72,43 @@ private:
 	
 	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
 	void UpdateHeadGaugeVisibility();
+	void SetStatusGaugeEnabled(bool bIsEnabled);
+		
+		
+	/*******************************************************/
+	/*                 Death and Respawn				   */
+	/*******************************************************/
+
+	FTransform MeshRelativeTransform;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
+	void PlayDeathAnimation();
+	
+	void StartDeathSequence();
+	void Respawn();
+
+	virtual void OnDead();
+	virtual void OnRespawn();
+	
+	FTimerHandle DeathMontageTimerHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	float DeathMontageFinishTimeShift = -0.8f;
+	
+	void DeathMontageFinished();
+	void SetRagdollEnabled(bool bIsEnabled);
+
+	/*******************************************************/
+	/*                Team								   */
+	/*******************************************************/
+
+public:
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
+private:
+	UPROPERTY(Replicated)
+	FGenericTeamId TeamID;
 };
