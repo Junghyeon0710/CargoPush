@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 #include "CAIController.generated.h"
 
@@ -19,10 +20,26 @@ public:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "AI Behavior")
+	FName TargetBlackboardKeyName = "Target";
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI Behavior")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+	
 	UPROPERTY(VisibleDefaultsOnly, Category="Perception")
 	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
 
 	UPROPERTY(VisibleDefaultsOnly, Category="Perception")
 	TObjectPtr<UAISenseConfig_Sight> SightConfig;
+
+	const UObject* GetCurrentTarget() const;
+	void SetCurrentTarget(AActor* NewTarget);
+
+private:
+	UFUNCTION()
+	void TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus Stimulus);
 };

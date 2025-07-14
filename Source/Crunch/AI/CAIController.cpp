@@ -3,6 +3,7 @@
 
 #include "CAIController.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Crunch/Character/CCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -27,6 +28,7 @@ ACAIController::ACAIController()
 	SightConfig->PeripheralVisionAngleDegrees = 180.f;
 
 	AIPerceptionComponent->ConfigureSense(*SightConfig);
+	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::TargetPerceptionUpdated);
 }
 
 void ACAIController::OnPossess(APawn* InPawn)
@@ -42,3 +44,51 @@ void ACAIController::OnPossess(APawn* InPawn)
 	}
 }
 
+void ACAIController::BeginPlay()
+{
+	Super::BeginPlay();
+	RunBehaviorTree(BehaviorTree);
+}
+
+void ACAIController::TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus Stimulus)
+{
+	if (Stimulus.WasSuccessfullySensed())
+	{
+		if (!GetCurrentTarget())
+		{
+			SetCurrentTarget(TargetActor);
+		}
+	}
+	else
+	{	if (GetCurrentTarget() == TargetActor)
+		{
+			SetCurrentTarget(nullptr);
+		}
+	}
+}
+
+const UObject* ACAIController::GetCurrentTarget() const
+{
+	const UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
+	if (BlackboardComponent)
+	{
+		return GetBlackboardComponent()->GetValueAsObject(TargetBlackboardKeyName);
+	}
+	return nullptr;
+}
+
+void ACAIController::SetCurrentTarget(AActor* NewTarget)
+{
+	if (!GetBlackboardComponent())
+	{
+		return;
+	}
+	if (NewTarget)
+	{
+		GetBlackboardComponent()->SetValueAsObject(TargetBlackboardKeyName, NewTarget);
+	}
+	else
+	{
+		GetBlackboardComponent()->ClearValue(TargetBlackboardKeyName);
+	}
+}
