@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "Runtime/AIModule/Classes/AIController.h"
+#include "GameplayTagContainer.h"
 #include "CAIController.generated.h"
 
 class UAISenseConfig_Sight;
@@ -49,4 +50,9 @@ private:
 	AActor* GetNextPerceivedActor() const;
 
 	void ForgetActorIfDead(AActor* ActorToForget);
+
+	void ClearAndDisableAllSenses();
+	void EnableAllSenses();
+
+	void PawnDeadTagUpdated(const FGameplayTag Tag, int32 Count);
 };

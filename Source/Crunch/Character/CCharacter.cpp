@@ -170,6 +170,10 @@ void ACCharacter::PlayDeathAnimation()
 void ACCharacter::StartDeathSequence()
 {
 	OnDead();
+	if (CAbilitySystemComponent)
+	{
+		CAbilitySystemComponent->CancelAllAbilities();
+	}
 	PlayDeathAnimation();
 	SetStatusGaugeEnabled(false);
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
