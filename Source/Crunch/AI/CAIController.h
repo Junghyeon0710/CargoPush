@@ -42,4 +42,9 @@ private:
 private:
 	UFUNCTION()
 	void TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus Stimulus);
+
+	UFUNCTION()
+	void TargetPerceptionForgotten(AActor* ForgottenActor);
+
+	AActor* GetNextPerceivedActor() const;
 };

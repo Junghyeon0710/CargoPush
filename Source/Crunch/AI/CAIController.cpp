@@ -29,6 +29,7 @@ ACAIController::ACAIController()
 
 	AIPerceptionComponent->ConfigureSense(*SightConfig);
 	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::TargetPerceptionUpdated);
+	AIPerceptionComponent->OnTargetPerceptionForgotten.AddDynamic(this, &ThisClass::TargetPerceptionForgotten);
 }
 
 void ACAIController::OnPossess(APawn* InPawn)
@@ -60,11 +61,37 @@ void ACAIController::TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus St
 		}
 	}
 	else
-	{	if (GetCurrentTarget() == TargetActor)
+	{	
+	}
+}
+
+void ACAIController::TargetPerceptionForgotten(AActor* ForgottenActor)
+{
+	if (!ForgottenActor)
+	{
+		return;
+	}
+	
+	if (GetCurrentTarget() == ForgottenActor)
+	{
+		SetCurrentTarget(GetNextPerceivedActor());
+	}
+}
+
+AActor* ACAIController::GetNextPerceivedActor() const
+{
+	if (PerceptionComponent)
+	{
+		TArray<AActor*> AllPerceptionActors;
+		AIPerceptionComponent->GetPerceivedHostileActors(AllPerceptionActors);
+
+		if (AllPerceptionActors.Num() != 0)
 		{
-			SetCurrentTarget(nullptr);
+			return AllPerceptionActors[0];
 		}
 	}
+
+	return nullptr;
 }
 
 const UObject* ACAIController::GetCurrentTarget() const
