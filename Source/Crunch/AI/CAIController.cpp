@@ -3,8 +3,11 @@
 
 #include "CAIController.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Crunch/Character/CCharacter.h"
+#include "Crunch/GAS/UCAbilitySystemStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -61,7 +64,8 @@ void ACAIController::TargetPerceptionUpdated(AActor* TargetActor, FAIStimulus St
 		}
 	}
 	else
-	{	
+	{
+		ForgetActorIfDead(TargetActor);
 	}
 }
 
@@ -92,6 +96,31 @@ AActor* ACAIController::GetNextPerceivedActor() const
 	}
 
 	return nullptr;
+}
+
+void ACAIController::ForgetActorIfDead(AActor* ActorToForget)
+{
+	const UAbilitySystemComponent* ActorASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ActorToForget);
+	if (!ActorASC)
+	{
+		return;
+	}
+
+	if (ActorASC->HasMatchingGameplayTag(UCAbilitySystemStatics::GetDeadStatTag()))
+	{
+		for (UAIPerceptionComponent::TActorPerceptionContainer::TIterator Iter = AIPerceptionComponent->GetPerceptualDataIterator(); Iter; ++Iter)
+		{
+			if (Iter->Key != ActorToForget)
+			{
+				continue;
+			}
+
+			for (FAIStimulus& Stimulus : Iter->Value.LastSensedStimuli)
+			{
+				Stimulus.SetStimulusAge(TNumericLimits<float>::Max());
+			}
+		}
+	}
 }
 
 const UObject* ACAIController::GetCurrentTarget() const

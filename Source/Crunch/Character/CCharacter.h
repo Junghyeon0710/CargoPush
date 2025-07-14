@@ -116,7 +116,8 @@ private:
 	/*                AI								   */
 	/*******************************************************/
 private:
-
+	void SetAIPerceptionStimuliSourceEnabled(bool bIsEnabled);
+	
 	UPROPERTY()
 	TObjectPtr<class UAIPerceptionStimuliSourceComponent> PerceptionStimuliSourceComponent;
 };

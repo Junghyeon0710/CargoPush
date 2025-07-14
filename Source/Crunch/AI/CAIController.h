@@ -47,4 +47,6 @@ private:
 	void TargetPerceptionForgotten(AActor* ForgottenActor);
 
 	AActor* GetNextPerceivedActor() const;
+
+	void ForgetActorIfDead(AActor* ActorToForget);
 };
