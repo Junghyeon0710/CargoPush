@@ -4,6 +4,8 @@
 #include "Minion.h"
 
 #include "AbilitySystemComponent.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Crunch/GAS/CAbilitySystemComponent.h"
 #include "Crunch/GAS/UCAbilitySystemStatics.h"
 
@@ -22,6 +24,17 @@ bool AMinion::IsActive() const
 void AMinion::Activate()
 {
 	GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(UCAbilitySystemStatics::GetDeadStatTag()));
+}
+
+void AMinion::SetGoal(AActor* Goal)
+{
+	if (AAIController* AIController = GetController<AAIController>())
+	{
+		if (UBlackboardComponent* BlackboardComponent = AIController->GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsObject(GoalBlackboardKeyName, Goal);
+		}
+	}
 }
 
 void AMinion::PicSkinBasedOnTeamID()

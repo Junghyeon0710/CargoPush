@@ -16,6 +16,7 @@ public:
 
 	bool IsActive() const;
 	void Activate();
+	void SetGoal(AActor* Goal);
 
 private:
 	void PicSkinBasedOnTeamID();
@@ -24,4 +25,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	TMap<FGenericTeamId, USkeletalMesh*> SkinMap;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Blackboard")
+	FName GoalBlackboardKeyName = "Goal";
 };

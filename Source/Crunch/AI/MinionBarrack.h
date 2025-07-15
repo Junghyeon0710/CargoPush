@@ -34,6 +34,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	float GroupSpawnInterval = 5.f;
 
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	TObjectPtr<AActor> Goal;
+	
 	UPROPERTY()
 	TArray<AMinion*> MinionPool;
 
