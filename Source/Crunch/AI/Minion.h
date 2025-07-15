@@ -14,6 +14,9 @@ class CRUNCH_API AMinion : public ACCharacter
 public:
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
 
+	bool IsActive() const;
+	void Activate();
+
 private:
 	void PicSkinBasedOnTeamID();
 

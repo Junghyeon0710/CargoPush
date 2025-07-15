@@ -15,7 +15,10 @@ AMinionBarrack::AMinionBarrack()
 void AMinionBarrack::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnNewMinions(5);
+	if (HasAuthority())
+	{
+		GetWorld()->GetTimerManager().SetTimer(SpawnIntervalTimerHandle,this, &ThisClass::SpawnNewGroup, GroupSpawnInterval, true);
+	}
 }
 
 void AMinionBarrack::Tick(float DeltaTime)
@@ -40,6 +43,34 @@ const APlayerStart* AMinionBarrack::GetNextSpawnSpot()
 	return SpawnSpots[NextSpawnSpotIndex];
 }
 
+void AMinionBarrack::SpawnNewGroup()
+{
+	int i = MinionPerGroup;
+
+	while (i > 0)
+	{
+		FTransform SpawnTransform = GetActorTransform();
+		if (const APlayerStart* NextSpawnSPot = GetNextSpawnSpot())
+		{
+			SpawnTransform = NextSpawnSPot->GetActorTransform();
+		}
+
+		AMinion* NextAvaliableMinion  = GetNextAvaliableMinion();
+
+		if (!NextAvaliableMinion)
+		{
+			break; //풀에서 사용 가능 미니언이 없으면 빠져나옵니다.
+		}
+
+		NextAvaliableMinion->SetActorTransform(SpawnTransform);
+		NextAvaliableMinion->Activate();
+		--i;
+	}
+
+	// 없는 만큼 풀에 생성
+	SpawnNewMinions(i);
+}
+
 void AMinionBarrack::SpawnNewMinions(int Amount)
 {
 	for (int i = 0; i < Amount; ++i)
@@ -55,5 +86,18 @@ void AMinionBarrack::SpawnNewMinions(int Amount)
 		NewMinion->FinishSpawning(SpawnTransform);
 		MinionPool.Add(NewMinion);
 	}
+}
+
+AMinion* AMinionBarrack::GetNextAvaliableMinion() const
+{
+	for (AMinion* Minion : MinionPool)
+	{
+		if (!Minion->IsActive())
+		{
+			return Minion;
+		}
+	}
+
+	return nullptr;
 }
 
