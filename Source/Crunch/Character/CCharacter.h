@@ -12,6 +12,7 @@
 class UWidgetComponent;
 class UCAttributeSet;
 class UCAbilitySystemComponent;
+struct FGameplayEventData;
 
 UCLASS()
 class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
@@ -43,6 +44,9 @@ public:
 	/** Gameplay Ability */
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/* ~Gameplay Ability **/
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SendGameplayEventToSelf(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
 	
 protected:
 	void BindGASChangeDelegate();

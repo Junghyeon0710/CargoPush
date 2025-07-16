@@ -12,7 +12,7 @@ UCLASS()
 class CRUNCH_API UUpperCut : public UCGameplayAbility
 {
 	GENERATED_BODY()
-
+	UUpperCut();
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
@@ -36,6 +36,9 @@ private:
 
 	UFUNCTION()
 	void HandleComboChangeEvent(FGameplayEventData EventData);
+
+	UFUNCTION()
+	void HandleComboCommitEvent(FGameplayEventData EventData);
 
 	FName NextComboName;
 };
