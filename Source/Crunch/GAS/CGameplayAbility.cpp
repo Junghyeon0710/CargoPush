@@ -5,9 +5,15 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GAP_Launched.h"
+#include "UCAbilitySystemStatics.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+
+UCGameplayAbility::UCGameplayAbility()
+{
+	ActivationBlockedTags.AddTag(UCAbilitySystemStatics::GetStunStatTag());
+}
 
 UAnimInstance* UCGameplayAbility::GetOwnerAnimInstance() const
 {

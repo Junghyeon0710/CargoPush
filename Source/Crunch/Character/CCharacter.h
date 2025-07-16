@@ -47,6 +47,7 @@ public:
 protected:
 	void BindGASChangeDelegate();
 	void DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
+	void StunTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
 	
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;
@@ -73,7 +74,17 @@ private:
 	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
 	void UpdateHeadGaugeVisibility();
 	void SetStatusGaugeEnabled(bool bIsEnabled);
-		
+	/*******************************************************/
+	/*                 Stun								   */
+	/*******************************************************/
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TObjectPtr<UAnimMontage> StunMontage;
+
+	virtual void OnStun();
+	virtual void OnRecoverFromStun();
 		
 	/*******************************************************/
 	/*                 Death and Respawn				   */
