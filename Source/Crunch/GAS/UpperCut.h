@@ -29,6 +29,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Launch)
 	float UpperCutLaunchSpeed = 1000.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = Launch)
+	float UpperComboHoldSpeed = 100.f;
+
 	static FGameplayTag GetUpperCutLaunchTag();
 
 	UFUNCTION()
@@ -39,6 +42,9 @@ private:
 
 	UFUNCTION()
 	void HandleComboCommitEvent(FGameplayEventData EventData);
+
+	UFUNCTION()
+	void HandleComboDamageEvent(FGameplayEventData EventData);
 
 	FName NextComboName;
 };
