@@ -3,6 +3,7 @@
 
 #include "CCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Crunch/GAS/CAbilitySystemComponent.h"
@@ -85,6 +86,8 @@ void ACCharacter::BindGASChangeDelegate()
 	if (CAbilitySystemComponent)
 	{
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ThisClass::DeathTagUpdated);
+		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetStunStatTag()).AddUObject(this, &ThisClass::StunTagUpdated);
+		
 	}
 }
 
@@ -100,6 +103,25 @@ void ACCharacter::DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount)
 	}
 }
 
+void ACCharacter::StunTagUpdated(const FGameplayTag DeadTag, int32 NewCount)
+{
+	if (IsDead())
+	{
+		return;
+	}
+
+	if (NewCount != 0)
+	{
+		OnStun();
+		PlayAnimMontage(StunMontage);
+	}
+	else
+	{
+		OnRecoverFromStun();
+		StopAnimMontage();
+	}
+}
+
 void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -109,6 +131,16 @@ void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 UAbilitySystemComponent* ACCharacter::GetAbilitySystemComponent() const
 {
 	return CAbilitySystemComponent;
+}
+
+bool ACCharacter::Server_SendGameplayEventToSelf_Validate(const FGameplayTag& EventTag, const FGameplayEventData& EventData)
+{
+	return true;
+}
+
+void ACCharacter::Server_SendGameplayEventToSelf_Implementation(const FGameplayTag& EventTag, const FGameplayEventData& EventData)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventTag, EventData);
 }
 
 void ACCharacter::ConfigureOverHeadStatusWidget()
@@ -158,6 +190,14 @@ void ACCharacter::SetStatusGaugeEnabled(bool bIsEnabled)
 	}
 }
 
+void ACCharacter::OnStun()
+{
+}
+
+void ACCharacter::OnRecoverFromStun()
+{
+}
+
 bool ACCharacter::IsDead() const
 {
 	return GetAbilitySystemComponent()->HasMatchingGameplayTag(UCAbilitySystemStatics::GetDeadStatTag());
@@ -189,7 +229,7 @@ void ACCharacter::StartDeathSequence()
 	}
 	PlayDeathAnimation();
 	SetStatusGaugeEnabled(false);
-	GetCharacterMovement()->SetMovementMode(MOVE_None);
+//	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetAIPerceptionStimuliSourceEnabled(false);
 }
@@ -200,7 +240,7 @@ void ACCharacter::Respawn()
 	SetAIPerceptionStimuliSourceEnabled(true);
 	SetRagdollEnabled(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	//GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
 	SetStatusGaugeEnabled(true);
 

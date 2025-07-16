@@ -18,4 +18,6 @@ class CRUNCH_API UCAbilitySystemStatics : public UBlueprintFunctionLibrary
 public:
 	static FGameplayTag GetBasicAttackAbilityTag();
 	static FGameplayTag GetDeadStatTag();
+	static FGameplayTag GetStunStatTag();
+	static FGameplayTag GetBasicAttackInputPressedTag();
 };

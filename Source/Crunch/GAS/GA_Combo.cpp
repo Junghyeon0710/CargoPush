@@ -117,7 +117,6 @@ void UGA_Combo::ComboChangeEventReceived(FGameplayEventData Data)
 	if (EventTag == GetComboChangedEventEndTag())
 	{
 		NextComboName = NAME_None;
-		UE_LOG(LogTemp, Display, TEXT("Next ComboClear"));
 		return;
 	}
 
@@ -125,7 +124,6 @@ void UGA_Combo::ComboChangeEventReceived(FGameplayEventData Data)
 	UGameplayTagsManager::Get().SplitGameplayTagFName(EventTag, TagNames);
 	NextComboName = TagNames.Last();
 
-	UE_LOG(LogTemp, Display, TEXT("%s"),*NextComboName.ToString());
 }
 
 void UGA_Combo::DoDamage(FGameplayEventData Data)
@@ -135,13 +133,6 @@ void UGA_Combo::DoDamage(FGameplayEventData Data)
 	for (const FHitResult& HitResult : HitResults)
 	{
 		TSubclassOf<UGameplayEffect> GameplayEffect = GetDamageEffectForCurrentCombo();
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffect, GetAbilityLevel(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo()));
-
-		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
-		EffectContext.AddHitResult(HitResult);
-
-		EffectSpecHandle.Data->SetContext(EffectContext);
-			
-		ApplyGameplayEffectSpecToTarget(GetCurrentAbilitySpecHandle(), CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(HitResult.GetActor()));
+		ApplyGameplayEffectToHitResultActor(HitResult, GameplayEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 	}
 }

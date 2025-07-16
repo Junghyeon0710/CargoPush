@@ -12,6 +12,7 @@
 class UWidgetComponent;
 class UCAttributeSet;
 class UCAbilitySystemComponent;
+struct FGameplayEventData;
 
 UCLASS()
 class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
@@ -43,10 +44,14 @@ public:
 	/** Gameplay Ability */
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/* ~Gameplay Ability **/
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SendGameplayEventToSelf(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
 	
 protected:
 	void BindGASChangeDelegate();
 	void DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
+	void StunTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
 	
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;
@@ -73,7 +78,17 @@ private:
 	FTimerHandle HeadStatGaugeVisibilityUpdateTimerHandle;
 	void UpdateHeadGaugeVisibility();
 	void SetStatusGaugeEnabled(bool bIsEnabled);
-		
+	/*******************************************************/
+	/*                 Stun								   */
+	/*******************************************************/
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TObjectPtr<UAnimMontage> StunMontage;
+
+	virtual void OnStun();
+	virtual void OnRecoverFromStun();
 		
 	/*******************************************************/
 	/*                 Death and Respawn				   */
