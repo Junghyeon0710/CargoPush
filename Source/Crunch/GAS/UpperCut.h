@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CGameAbilityTypes.h"
 #include "CGameplayAbility.h"
 #include "UpperCut.generated.h"
 
@@ -17,6 +18,9 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = GamepalyEffect)
+	TMap<FName, FGenericDamageEffectDef> ComboDamageMap;
+	
 	UPROPERTY(EditDefaultsOnly, Category = GamepalyEffect)
 	TSubclassOf<UGameplayEffect> LaunchDamageEffect;
 	
@@ -33,6 +37,7 @@ private:
 	float UpperComboHoldSpeed = 100.f;
 
 	static FGameplayTag GetUpperCutLaunchTag();
+	const FGenericDamageEffectDef* GetDamageEffectDefForCurrentCombo() const;
 
 	UFUNCTION()
 	void StartLaunching(FGameplayEventData EventData);
