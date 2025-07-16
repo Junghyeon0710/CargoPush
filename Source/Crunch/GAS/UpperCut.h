@@ -19,4 +19,12 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	TObjectPtr<UAnimMontage> UpperCutMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Targetting)
+	float TargetSweepSphereRadius = 80.f;
+
+	static FGameplayTag GetUpperCutLaunchTag();
+
+	UFUNCTION()
+	void StartLaunching(FGameplayEventData EventData);
 };
