@@ -15,6 +15,8 @@ UCLASS()
 class CRUNCH_API UCGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
+public:
+	
 protected:
 
 	UAnimInstance* GetOwnerAnimInstance() const;
@@ -22,7 +24,14 @@ protected:
 
 	UFUNCTION()
 	FORCEINLINE bool ShouldDrawDebug() const { return bShouldDrawDebug; }
+	void PushSelf(const FVector& PushVel);
+	void PushTarget(AActor* Target, const FVector& PushVel);
+
+	ACharacter* GetOwningAvatarCharacter();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Debug)
 	bool bShouldDrawDebug = false;
+
+	UPROPERTY()
+	TObjectPtr<ACharacter> AvatarCharacter;
 };
