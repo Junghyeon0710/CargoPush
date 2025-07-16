@@ -17,6 +17,9 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = GamepalyEffect)
+	TSubclassOf<UGameplayEffect> LaunchDamageEffect;
+	
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	TObjectPtr<UAnimMontage> UpperCutMontage;
 
