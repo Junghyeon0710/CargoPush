@@ -44,6 +44,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	FName IconMaterialParamName = "Icon";
 
+	UPROPERTY(EditDefaultsOnly, Category = "Visual")
+	FName CooldownPercentParaName = "Percent";
+
 	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
 	float CooldownUpdateInterval = 0.1f;
 	
