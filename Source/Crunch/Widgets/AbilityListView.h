@@ -8,6 +8,7 @@
 #include "AbilityListView.generated.h"
 
 class UGameplayAbility;
+struct FAbilityWidgetData;
 
 UCLASS()
 class CRUNCH_API UAbilityListView : public UListView
@@ -15,5 +16,12 @@ class CRUNCH_API UAbilityListView : public UListView
 	GENERATED_BODY()
 public:
 	void ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& Abilities);
-	
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Data")
+	UDataTable* AbilityDataTable;
+
+	void AbilityGaugeGenerated(UUserWidget& Widget);
+
+	const FAbilityWidgetData* FindWidgetDataForAbility(const TSubclassOf<UGameplayAbility>& AbilityClass) const;
 };
