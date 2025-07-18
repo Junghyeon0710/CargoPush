@@ -7,6 +7,7 @@
 #include "Crunch/GAS/CGameAbilityTypes.h"
 #include "GameplayWidget.generated.h"
 
+class UAbilityListView;
 class UGameplayAbility;
 class UValueGauge;
 class UAbilitySystemComponent;
@@ -26,6 +27,9 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UValueGauge> ManaBar;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UAbilityListView> AbilityListView;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;
