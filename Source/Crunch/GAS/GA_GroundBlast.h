@@ -6,6 +6,7 @@
 #include "CGameplayAbility.h"
 #include "GA_GroundBlast.generated.h"
 
+class ATargetActor_GroundPick;
 /**
  * 
  */
@@ -19,7 +20,16 @@ public:
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	private:
+private:
+
+	UPROPERTY(EditDefaultsOnly, Category = Targeting)
+	TSubclassOf<ATargetActor_GroundPick> TargetActorClass;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TObjectPtr<UAnimMontage> GroundBlastMontage;
+
+	UFUNCTION()
+	void TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+	UFUNCTION()
+	void TargetCanceled(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 };
