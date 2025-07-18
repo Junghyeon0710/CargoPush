@@ -7,12 +7,14 @@
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
 #include "GenericTeamAgentInterface.h"
+#include "Crunch/GAS/CGameAbilityTypes.h"
 #include "CCharacter.generated.h"
 
 class UWidgetComponent;
 class UCAttributeSet;
 class UCAbilitySystemComponent;
 struct FGameplayEventData;
+class UGameplayAbility;
 
 UCLASS()
 class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
@@ -54,6 +56,8 @@ protected:
 	void BindGASChangeDelegate();
 	void DeathTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
 	void StunTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
+	void AimTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
+	void SetIsAiming(bool bIsAiming);
 	
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;

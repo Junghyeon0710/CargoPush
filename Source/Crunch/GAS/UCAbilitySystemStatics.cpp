@@ -26,6 +26,11 @@ FGameplayTag UCAbilitySystemStatics::GetBasicAttackInputPressedTag()
 	return FGameplayTag::RequestGameplayTag("Ability.BasicAttack.Pressed");;
 }
 
+FGameplayTag UCAbilitySystemStatics::GetAimStatTag()
+{
+	return FGameplayTag::RequestGameplayTag("Stats.Aim");;
+}
+
 float UCAbilitySystemStatics::GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability)
 {
 	if (!Ability)
