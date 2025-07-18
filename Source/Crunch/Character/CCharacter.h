@@ -58,6 +58,7 @@ protected:
 	void StunTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
 	void AimTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
 	void SetIsAiming(bool bIsAiming);
+	virtual void OnAimStateChanged(bool bIsAiming);
 	
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;

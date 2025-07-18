@@ -44,7 +44,7 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		LookRotOffset = UKismetMathLibrary::NormalizedDeltaRotator(ControllerRot, BodyRot);
 
 		FwdSpeed = Velocity.Dot(ControllerRot.Vector());
-		RightSpeed = Velocity.Dot(ControllerRot.Vector().Cross(FVector::UpVector));
+		RightSpeed = -Velocity.Dot(ControllerRot.Vector().Cross(FVector::UpVector));
 	}
 
 	if (OwnerMovementComp)

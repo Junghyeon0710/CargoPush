@@ -137,6 +137,11 @@ void ACCharacter::SetIsAiming(bool bIsAiming)
 {
 	bUseControllerRotationYaw = bIsAiming;
 	GetCharacterMovement()->bOrientRotationToMovement = !bIsAiming;
+	OnAimStateChanged(bIsAiming);
+}
+
+void ACCharacter::OnAimStateChanged(bool bIsAiming)
+{
 }
 
 void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
