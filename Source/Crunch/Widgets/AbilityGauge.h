@@ -36,13 +36,13 @@ class CRUNCH_API UAbilityGauge : public UUserWidget, public IUserObjectListEntry
 	GENERATED_BODY()
 
 public:
+	virtual void NativeConstruct() override;
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	void ConfigureWithWidgetData(const FAbilityWidgetData* WidgetData);
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	FName IconMaterialParamName = "Icon";
-
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UImage> Icon;
@@ -55,4 +55,7 @@ private:
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> CostText;
+
+	UPROPERTY()
+	TObjectPtr<UGameplayAbility> AbilityCDO;
 };
