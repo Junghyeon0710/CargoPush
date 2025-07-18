@@ -3,8 +3,10 @@
 
 #include "GameplayWidget.h"
 
+#include "AbilityListView.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ValueGauge.h"
+#include "Crunch/GAS/CAbilitySystemComponent.h"
 #include "Crunch/GAS/CAttributeSet.h"
 
 void UGameplayWidget::NativeConstruct()
@@ -12,9 +14,21 @@ void UGameplayWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	OwnerAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwningPlayerPawn());
+
+	// const UCAbilitySystemComponent* CAbilitySystemComponent = Cast<UCAbilitySystemComponent>(OwnerAbilitySystemComponent);
+	// if (CAbilitySystemComponent)
+	// {
+	// 	ConfigureAbilities(CAbilitySystemComponent->GetAbilities());
+	// }
+	
 	if (OwnerAbilitySystemComponent)
 	{
 		HealthBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetHealthAttribute(), UCAttributeSet::GetMaxHealthAttribute());
 		ManaBar->SetAndBoundToGameplayAttribute(OwnerAbilitySystemComponent, UCAttributeSet::GetManaAttribute(), UCAttributeSet::GetMaxManaAttribute());
 	}
+}
+
+void UGameplayWidget::ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& Abilities)
+{
+	AbilityListView->ConfigureAbilities(Abilities);
 }

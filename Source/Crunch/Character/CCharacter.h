@@ -28,6 +28,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const;
+	
 protected:
 	virtual void BeginPlay() override;
 
