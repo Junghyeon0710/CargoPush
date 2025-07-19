@@ -92,6 +92,7 @@ void ACCharacter::BindGASChangeDelegate()
 	{
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ThisClass::DeathTagUpdated);
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetStunStatTag()).AddUObject(this, &ThisClass::StunTagUpdated);
+		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetAimStatTag()).AddUObject(this, &ThisClass::AimTagUpdated);
 		
 	}
 }
@@ -125,6 +126,22 @@ void ACCharacter::StunTagUpdated(const FGameplayTag DeadTag, int32 NewCount)
 		OnRecoverFromStun();
 		StopAnimMontage();
 	}
+}
+
+void ACCharacter::AimTagUpdated(const FGameplayTag DeadTag, int32 NewCount)
+{
+	SetIsAiming(NewCount != 0);
+}
+
+void ACCharacter::SetIsAiming(bool bIsAiming)
+{
+	bUseControllerRotationYaw = bIsAiming;
+	GetCharacterMovement()->bOrientRotationToMovement = !bIsAiming;
+	OnAimStateChanged(bIsAiming);
+}
+
+void ACCharacter::OnAimStateChanged(bool bIsAiming)
+{
 }
 
 void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
