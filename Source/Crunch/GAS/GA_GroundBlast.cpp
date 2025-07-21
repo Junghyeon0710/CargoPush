@@ -38,19 +38,23 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 
 	AGameplayAbilityTargetActor* TargetActor;
 	WaitTargetDataTask->BeginSpawningActor(this, TargetActorClass, TargetActor);
+
+	ATargetActor_GroundPick* GroundPickActor = Cast<ATargetActor_GroundPick>(TargetActor);
+	if (GroundPickActor)
+	{
+		GroundPickActor->SetShouldDrawDebug(ShouldDrawDebug());
+		GroundPickActor->SetTargetAreaRadius(TargetAreaRadius);
+		GroundPickActor->SetTargetTraceRange(TargetTraceRange);
+	}
+	
 	WaitTargetDataTask->FinishSpawningActor(this, TargetActor);
 	
 }
 
 void UGA_GroundBlast::TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetDataHandle);
+	BP_ApplyGameplayEffectToTarget(TargetDataHandle, DamageEffectDef.DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 	
-
-	for (AActor* Target : TargetActors)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Find Target: %s"), *Target->GetName());
-	}
 	UE_LOG(LogTemp, Display, TEXT("TargetConfirmed"));
 	K2_EndAbility();
 }

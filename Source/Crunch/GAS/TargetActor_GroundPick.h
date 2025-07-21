@@ -18,7 +18,8 @@ public:
 		
 	virtual void ConfirmTargetingAndContinue() override;
 	void SetTargetOptions(bool bTargetFriendly, bool bTargetEnemy);
-	
+	FORCEINLINE void SetTargetTraceRange(float NewRange) {TargetTraceRange = NewRange;};
+	FORCEINLINE void SetShouldDrawDebug(bool bDrawDebug) {bShouldDrawDebug = bDrawDebug;}
 protected:
 
 	bool bShouldTargetEnemy = true;
@@ -33,6 +34,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	float TargetTraceRange = 2000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	bool bShouldDrawDebug = false;
 
 public:
 	virtual void Tick(float DeltaTime) override;
