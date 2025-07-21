@@ -12,14 +12,16 @@ class CRUNCH_API ATargetActor_GroundPick : public AGameplayAbilityTargetActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ATargetActor_GroundPick();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	FVector GetTargetPoint() const;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetTraceRange = 2000.f;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

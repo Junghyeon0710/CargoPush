@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Crunch/Crunch.h"
 #include "Crunch/GAS/CAbilitySystemComponent.h"
 #include "Crunch/GAS/CAttributeSet.h"
 #include "Crunch/GAS/UCAbilitySystemStatics.h"
@@ -21,7 +22,9 @@ ACCharacter::ACCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_SpringArm, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Target, ECR_Ignore);
+	
 	CAbilitySystemComponent = CreateDefaultSubobject<UCAbilitySystemComponent>("CAbilitySystem Component");
 	CAttributeSet = CreateDefaultSubobject<UCAttributeSet>("Attributes");
 
