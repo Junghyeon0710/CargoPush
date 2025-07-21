@@ -39,7 +39,10 @@ private:
 	TSubclassOf<ATargetActor_GroundPick> TargetActorClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
-	TObjectPtr<UAnimMontage> GroundBlastMontage;
+	TObjectPtr<UAnimMontage> TargettingMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	TObjectPtr<UAnimMontage> CastMontage;
 
 	UFUNCTION()
 	void TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
