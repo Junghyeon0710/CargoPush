@@ -20,7 +20,10 @@ public:
 	void SetTargetOptions(bool bTargetFriendly, bool bTargetEnemy);
 	FORCEINLINE void SetTargetTraceRange(float NewRange) {TargetTraceRange = NewRange;};
 	FORCEINLINE void SetShouldDrawDebug(bool bDrawDebug) {bShouldDrawDebug = bDrawDebug;}
-protected:
+private:
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Visual")
+	TObjectPtr<UDecalComponent> DecalComponent;
 
 	bool bShouldTargetEnemy = true;
 	bool bShouldTargetFriendly = false; 
