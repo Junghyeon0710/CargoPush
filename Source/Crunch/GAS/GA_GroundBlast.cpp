@@ -44,6 +44,13 @@ void UGA_GroundBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 
 void UGA_GroundBlast::TargetConfirmed(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+	TArray<AActor*> TargetActors = UAbilitySystemBlueprintLibrary::GetAllActorsFromTargetData(TargetDataHandle);
+	
+
+	for (AActor* Target : TargetActors)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Find Target: %s"), *Target->GetName());
+	}
 	UE_LOG(LogTemp, Display, TEXT("TargetConfirmed"));
 	K2_EndAbility();
 }
