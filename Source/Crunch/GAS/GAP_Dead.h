@@ -17,4 +17,10 @@ public:
 	UGAP_Dead();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Reward")
+	float RewardRange = 1000.f;
+
+	TArray<AActor*> GetRewardTargets() const;
 };
