@@ -7,6 +7,7 @@
 #include "Crunch/GAS/CGameAbilityTypes.h"
 #include "GameplayWidget.generated.h"
 
+class UStatsGauge;
 class UAbilityListView;
 class UGameplayAbility;
 class UValueGauge;
@@ -30,6 +31,21 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAbilityListView> AbilityListView;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UStatsGauge> AttackDamageGauge;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UStatsGauge> ArmorGauge;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UStatsGauge> MoveSpeedGauge;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UStatsGauge> IntelligenceGauge;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UStatsGauge> StrengthGauge;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;

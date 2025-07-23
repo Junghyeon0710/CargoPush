@@ -10,6 +10,7 @@
 #include "Camera/CameraComponent.h"
 #include "Crunch/Crunch.h"
 #include "Crunch/GAS/CAbilitySystemComponent.h"
+#include "Crunch/GAS/CHeroAttributeSet.h"
 #include "Crunch/GAS/UCAbilitySystemStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -28,6 +29,8 @@ ACPlayerCharacter::ACPlayerCharacter()
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.f, 0.f);
+
+	HeroAttributeSet = CreateDefaultSubobject<UCHeroAttributeSet>("Hero Attribute Set");
 	
 }
 

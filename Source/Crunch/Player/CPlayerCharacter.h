@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "CPlayerCharacter.generated.h"
 
+class UCHeroAttributeSet;
 enum class ECAbilityInputID : uint8;
 struct FInputActionValue;
 /**
@@ -23,7 +24,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 private:
-
+	UPROPERTY()
+	TObjectPtr<UCHeroAttributeSet> HeroAttributeSet;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "View")
 	class USpringArmComponent* CameraBoom;
