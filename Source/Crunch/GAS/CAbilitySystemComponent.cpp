@@ -14,6 +14,8 @@ UCAbilitySystemComponent::UCAbilitySystemComponent()
 {
 	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetHealthAttribute()).AddUObject(this, &ThisClass::HealthUpdated);
 	GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetManaAttribute()).AddUObject(this, &ThisClass::ManaUpdated);
+	GetGameplayAttributeValueChangeDelegate(UCHeroAttributeSet::GetExperienceAttribute()).AddUObject(this, &ThisClass::ExperienceUpdated);
+	
 	GenericConfirmInputID = (int32)ECAbilityInputID::Confirm;
 	GenericCancelInputID = (int32)ECAbilityInputID::Cancel;
 }
@@ -64,6 +66,8 @@ void UCAbilitySystemComponent::InitializeBaseAttributes()
 
 		UE_LOG(LogTemp, Warning, TEXT("Max Level is: %d Max Experience is: %f"), MaxLevel, MaxExp)
 	}
+
+	ExperienceUpdated(FOnAttributeChangeData());
 }
 
 void UCAbilitySystemComponent::ServerSideInit()
@@ -132,6 +136,15 @@ void UCAbilitySystemComponent::ApplyFullStatEffect()
 const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& UCAbilitySystemComponent::GetAbilities() const
 {
 	return Abilities;
+}
+
+bool UCAbilitySystemComponent::IsAtMaxLevel() const
+{
+	bool bFound;
+	float CurrentLevel = GetGameplayAttributeValue(UCHeroAttributeSet::GetLevelAttribute(), bFound);
+	float MaxLevel = GetGameplayAttributeValue(UCHeroAttributeSet::GetMaxLevelAttribute(), bFound);
+
+	return CurrentLevel >= MaxLevel;
 }
 
 void UCAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level)
@@ -221,5 +234,60 @@ void UCAbilitySystemComponent::ManaUpdated(const FOnAttributeChangeData& ChangeD
 			RemoveLooseGameplayTag(UCAbilitySystemStatics::GetManaEmptyStatTag());
 		}
 	}
+}
+
+void UCAbilitySystemComponent::ExperienceUpdated(const FOnAttributeChangeData& ChangeData)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority())
+	{
+		return;
+	}
+
+	if (IsAtMaxLevel())
+	{
+		return;
+	}
+
+	if (!AbilitySystemGenerics)
+	{
+		return;
+	}
+
+	float CurrentExp = ChangeData.NewValue;
+
+	const FRealCurve* ExperienceCurve = AbilitySystemGenerics->GetExperienceCurve();
+	if (!ExperienceCurve)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't find Experience Data!!"));
+		return;
+	}
+
+	float PrevLevelExp = 0;
+	float NextLevelExp = 0;
+	float NewLevel = 1;
+
+	for (auto Iter = ExperienceCurve->GetKeyHandleIterator(); Iter; ++Iter)
+	{
+		float ExperienceToReachLevel = ExperienceCurve->GetKeyValue(*Iter);
+		if (CurrentExp < ExperienceToReachLevel)
+		{
+			NextLevelExp = ExperienceToReachLevel;
+			break;
+		}
+
+		PrevLevelExp = ExperienceToReachLevel;
+		NewLevel = Iter.GetIndex() +1;
+	}
+
+	float CurrentLevel = GetNumericAttributeBase(UCHeroAttributeSet::GetLevelAttribute());
+	float CurrentUpgradePoint = GetNumericAttributeBase(UCHeroAttributeSet::GetUpgradePointAttribute());
+
+	float LevelUpgraded = NewLevel - CurrentLevel;
+	float NewUpgradedPoint = CurrentUpgradePoint + LevelUpgraded;
+
+	SetNumericAttributeBase(UCHeroAttributeSet::GetLevelAttribute(), NewLevel);
+	SetNumericAttributeBase(UCHeroAttributeSet::GetPrevLevelExperienceAttribute(), PrevLevelExp);
+	SetNumericAttributeBase(UCHeroAttributeSet::GetNextLevelExperienceAttribute(), NextLevelExp);
+	SetNumericAttributeBase(UCHeroAttributeSet::GetUpgradePointAttribute(), NewUpgradedPoint);
 }
 
