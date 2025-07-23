@@ -10,6 +10,7 @@
 #include "Crunch/GAS/CGameAbilityTypes.h"
 #include "CCharacter.generated.h"
 
+struct FOnAttributeChangeData;
 class UWidgetComponent;
 class UCAttributeSet;
 class UCAbilitySystemComponent;
@@ -59,6 +60,7 @@ protected:
 	void AimTagUpdated(const FGameplayTag DeadTag, int32 NewCount);
 	void SetIsAiming(bool bIsAiming);
 	virtual void OnAimStateChanged(bool bIsAiming);
+	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);
 	
 	UPROPERTY(visibleDefaultsOnly, Category="Gameplay Ability")
 	TObjectPtr<UCAbilitySystemComponent> CAbilitySystemComponent;

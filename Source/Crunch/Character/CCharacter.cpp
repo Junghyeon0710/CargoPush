@@ -96,7 +96,8 @@ void ACCharacter::BindGASChangeDelegate()
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ThisClass::DeathTagUpdated);
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetStunStatTag()).AddUObject(this, &ThisClass::StunTagUpdated);
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetAimStatTag()).AddUObject(this, &ThisClass::AimTagUpdated);
-		
+
+		CAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetMoveSpeedAttribute()).AddUObject(this, &ThisClass::MoveSpeedUpdated);
 	}
 }
 
@@ -145,6 +146,11 @@ void ACCharacter::SetIsAiming(bool bIsAiming)
 
 void ACCharacter::OnAimStateChanged(bool bIsAiming)
 {
+}
+
+void ACCharacter::MoveSpeedUpdated(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }
 
 void ACCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
