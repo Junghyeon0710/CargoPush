@@ -41,6 +41,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
 	TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>> BaseAbilities;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Effects")
+	TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Base Stats")
 	UDataTable* BaseStatDataTable;
 };
