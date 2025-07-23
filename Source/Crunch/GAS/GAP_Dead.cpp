@@ -3,6 +3,8 @@
 
 #include "GAP_Dead.h"
 
+#include "AbilitySystemComponent.h"
+#include "CHeroAttributeSet.h"
 #include "UCAbilitySystemStatics.h"
 #include "Engine/OverlapResult.h"
 
@@ -22,16 +24,31 @@ void UGAP_Dead::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 	if (K2_HasAuthority())
 	{
 		AActor* Killer = TriggerEventData->ContextHandle.GetEffectCauser();
-		if (Killer)
+		if (!Killer || UCAbilitySystemStatics::IsHero(Killer))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Killer : %s"), *Killer->GetName())
+			Killer = nullptr;
 		}
 
 		TArray<AActor*> RewardTargets = GetRewardTargets();
-		for (const AActor* RewardTarget : RewardTargets)
+		if (RewardTargets.Num() == 0 && !Killer)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Find Reward Tartg: %s"), *RewardTarget->GetName());
+			K2_EndAbility();
+			return;
 		}
+
+		if (Killer && !RewardTargets.Contains(Killer))
+		{
+			RewardTargets.Add(Killer);
+		}
+
+		bool bFound = false;
+		float SelfExperience = GetAbilitySystemComponentFromActorInfo_Ensured()->GetGameplayAttributeValue(UCHeroAttributeSet::GetExperienceAttribute(), bFound);
+
+		float TotalExperienceReward = BaseExperienceReward + ExperienceRewardPerExperience * SelfExperience;
+		float TotalGoldReward = BaseExperienceReward + GoldRewardPerExperience * SelfExperience;
+
+		
+		
 	}
 }
 
