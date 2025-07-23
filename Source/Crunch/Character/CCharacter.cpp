@@ -56,7 +56,7 @@ bool ACCharacter::IsLocallyControlledByPlayer() const
 void ACCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	if (NewController && !NewController->IsLocalPlayerController())
+	if (NewController && !NewController->IsPlayerController())
 	{
 		ServerSideInit();
 	}
