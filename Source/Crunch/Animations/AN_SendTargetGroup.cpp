@@ -70,11 +70,13 @@ void UAN_SendTargetGroup::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 					continue;
 				}
 			}
-			
-		}
 
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), EventTag, Data);
+			FGameplayAbilityTargetData_SingleTargetHit* TargetHit = new FGameplayAbilityTargetData_SingleTargetHit(HitResult);
+			Data.TargetData.Add(TargetHit);
+			SendLocalGameplayCue(HitResult);
+		}
 	}
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), EventTag, Data);
 }
 
 

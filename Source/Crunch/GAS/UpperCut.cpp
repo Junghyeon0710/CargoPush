@@ -61,12 +61,15 @@ const FGenericDamageEffectDef* UUpperCut::GetDamageEffectDefForCurrentCombo() co
 
 void UUpperCut::StartLaunching(FGameplayEventData EventData)
 {
-	TArray<FHitResult> TargetHitResults = GetHitResultFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius, ETeamAttitude::Hostile, ShouldDrawDebug());
 	if (K2_HasAuthority())
 	{
 		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * UpperCutLaunchSpeed);
-		for (FHitResult HitResult : TargetHitResults)
+
+		int HitResultCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(EventData.TargetData);
+
+		for (int i =0; i< HitResultCount; ++i)
 		{
+			FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(EventData.TargetData, i);
 			PushTarget(HitResult.GetActor(), FVector::UpVector * UpperCutLaunchSpeed);
 			ApplyGameplayEffectToHitResultActor(HitResult, LaunchDamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
 		}
@@ -122,7 +125,6 @@ void UUpperCut::HandleComboCommitEvent(FGameplayEventData EventData)
 
 void UUpperCut::HandleComboDamageEvent(FGameplayEventData EventData)
 {
-	TArray<FHitResult> TargetHitResults = GetHitResultFromSweepLocationTargetData(EventData.TargetData, TargetSweepSphereRadius, ETeamAttitude::Hostile, ShouldDrawDebug());
 	if (K2_HasAuthority())
 	{
 		PushTarget(GetAvatarActorFromActorInfo(), FVector::UpVector * UpperComboHoldSpeed);
@@ -131,9 +133,13 @@ void UUpperCut::HandleComboDamageEvent(FGameplayEventData EventData)
 		{
 			return;
 		}
-		
-		for (FHitResult HitResult : TargetHitResults)
+
+		int HitResultCount = UAbilitySystemBlueprintLibrary::GetDataCountFromTargetData(EventData.TargetData);
+
+		for (int i =0; i< HitResultCount; ++i)
 		{
+			FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(EventData.TargetData, i);
+		
 			FVector PushCal = GetAvatarActorFromActorInfo()->GetActorTransform().TransformVector(EffectDef->PushVelocity);
 			PushTarget(HitResult.GetActor(), PushCal);
 			ApplyGameplayEffectToHitResultActor(HitResult, EffectDef->DamageEffect, GetAbilityLevel(CurrentSpecHandle, CurrentActorInfo));
