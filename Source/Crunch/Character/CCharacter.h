@@ -35,7 +35,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
+	void UpgradeAbilityWithInputID(ECAbilityInputID InputId);
 public:	
 	virtual void Tick(float DeltaTime) override;
 	

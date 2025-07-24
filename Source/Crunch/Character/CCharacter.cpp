@@ -83,6 +83,14 @@ void ACCharacter::BeginPlay()
 	PerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
 }
 
+void ACCharacter::UpgradeAbilityWithInputID(ECAbilityInputID InputId)
+{
+	if (CAbilitySystemComponent)
+	{
+		CAbilitySystemComponent->Server_UpgradeAbilityWithID(InputId);
+	}
+}
+
 void ACCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

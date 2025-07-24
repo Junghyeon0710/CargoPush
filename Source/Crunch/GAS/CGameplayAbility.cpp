@@ -4,6 +4,7 @@
 #include "CGameplayAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "GAP_Launched.h"
 #include "UCAbilitySystemStatics.h"
 #include "GameFramework/Character.h"
@@ -13,6 +14,17 @@
 UCGameplayAbility::UCGameplayAbility()
 {
 	ActivationBlockedTags.AddTag(UCAbilitySystemStatics::GetStunStatTag());
+}
+
+bool UCGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	FGameplayAbilitySpec* AbilitySpec = ActorInfo->AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
+	if (AbilitySpec && AbilitySpec->Level <= 0)
+	{
+		return false;
+	}
+
+	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 UAnimInstance* UCGameplayAbility::GetOwnerAnimInstance() const

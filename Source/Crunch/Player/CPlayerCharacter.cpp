@@ -60,6 +60,8 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::Jump);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::HandleLookInput);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::HandleMoveInput);
+		EnhancedInputComponent->BindAction(LearnAbilityLeaderAction, ETriggerEvent::Started, this, &ThisClass::LearnAbilityLeaderDown);
+		EnhancedInputComponent->BindAction(LearnAbilityLeaderAction, ETriggerEvent::Completed, this, &ThisClass::LearnAbilityLeaderUp);
 
 		for (const TPair<ECAbilityInputID, UInputAction*>& InputActionPair : GameplayAbilityInputActions)
 		{
@@ -85,9 +87,25 @@ void ACPlayerCharacter::HandleMoveInput(const FInputActionValue& InputActionValu
 	
 }
 
+void ACPlayerCharacter::LearnAbilityLeaderDown(const FInputActionValue& InputActionValue)
+{
+	bIsLearnAbilityLeaderDown = true;
+}
+
+void ACPlayerCharacter::LearnAbilityLeaderUp(const FInputActionValue& InputActionValue)
+{
+	bIsLearnAbilityLeaderDown = false;
+}
+
 void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID InputID)
 {
 	bool bPressed = InputActionValue.Get<bool>();
+
+	if (bPressed && bIsLearnAbilityLeaderDown)
+	{
+		UpgradeAbilityWithInputID(InputID);	
+	}
+	
 	if (bPressed)
 	{
 		GetAbilitySystemComponent()->AbilityLocalInputPressed((int32)InputID);
