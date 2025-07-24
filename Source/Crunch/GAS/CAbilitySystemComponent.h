@@ -22,6 +22,13 @@ public:
 	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const;
 
 	bool IsAtMaxLevel() const;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_UpgradeAbilityWithID(ECAbilityInputID InInputID);
+
+	UFUNCTION(Client, Reliable)
+	void Client_AbilitySpecLevelUpdated(FGameplayAbilitySpecHandle Handle, int NewLevel);
+	
 private:
 	void ApplyInitialEffects();
 	void GiveInitialAbilities();
