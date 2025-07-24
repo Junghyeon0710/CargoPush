@@ -3,6 +3,9 @@
 
 #include "PA_ShopItem.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+
 FItemCollection::FItemCollection()
 	:Items{}
 {
@@ -28,7 +31,7 @@ bool FItemCollection::Contains(const UPA_ShopItem* Item) const
 	return Items.Contains(Item);
 }
 
-TArray<const UPA_ShopItem*>& FItemCollection::GetItems() const
+const TArray<const UPA_ShopItem*>& FItemCollection::GetItems() const
 {
 	return Items;
 }

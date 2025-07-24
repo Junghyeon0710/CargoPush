@@ -19,7 +19,7 @@ public:
 	FItemCollection(const TArray<const UPA_ShopItem*>& InItems);
 	void AddItem(const UPA_ShopItem* NewItem, bool bAddUnique = false);
 	bool Contains(const UPA_ShopItem* Item) const;
-	TArray<const UPA_ShopItem*>& GetItems() const;
+	const TArray<const UPA_ShopItem*>& GetItems() const;
 private:
 	UPROPERTY()
 	TArray<const UPA_ShopItem*> Items;
@@ -44,7 +44,7 @@ public:
 	bool GetIsStackable() const {return bIsStackable;}
 	bool GetIsConsumable() const {return bIsConsumable;}
 	int GetMaxStackCount() const {return MaxStackCount;}
-	const TArray<TSoftClassPtr<UPA_ShopItem>>& GetIngredientItems() const {return IngredientItems;}
+	const TArray<TSoftObjectPtr<UPA_ShopItem>>& GetIngredientItems() const {return IngredientItems;}
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
@@ -78,7 +78,7 @@ private:
 	int MaxStackCount = 5;
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
-	TArray<TSoftClassPtr<UPA_ShopItem>> IngredientItems;;
+	TArray<TSoftObjectPtr<UPA_ShopItem>> IngredientItems;;
 	
 	
 };
