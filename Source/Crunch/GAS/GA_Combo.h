@@ -35,8 +35,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect")
 	TSubclassOf<UGameplayEffect> DefaultDamageEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect")
-	float TargetSweepSphereRadius = 30.f;
+	// UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect")
+	// float TargetSweepSphereRadius = 30.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayEffect")
 	TMap<FName, TSubclassOf<UGameplayEffect>> DamageEffectMap;

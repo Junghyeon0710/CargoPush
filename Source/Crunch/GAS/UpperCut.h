@@ -27,8 +27,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
 	TObjectPtr<UAnimMontage> UpperCutMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = Targetting)
-	float TargetSweepSphereRadius = 80.f;
+	// UPROPERTY(EditDefaultsOnly, Category = Targetting)
+	// float TargetSweepSphereRadius = 80.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Launch)
 	float UpperCutLaunchSpeed = 1000.f;

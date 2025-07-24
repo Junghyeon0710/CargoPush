@@ -4,6 +4,10 @@
 #include "AN_SendTargetGroup.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemGlobals.h"
+#include "GameplayCueManager.h"
+#include "GenericTeamAgentInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UAN_SendTargetGroup::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
@@ -25,18 +29,65 @@ void UAN_SendTargetGroup::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	}
 
 	FGameplayEventData Data;
+
+	TSet<AActor*> HitActors;
+	AActor* OwnerActor = MeshComp->GetOwner();
+	const IGenericTeamAgentInterface* OwnerTeamInterface = Cast<IGenericTeamAgentInterface>(OwnerActor);
 	for (int i = 1; i<TargetSocketNames.Num(); ++i)
 	{
-		FGameplayAbilityTargetData_LocationInfo* LocationInfo = new FGameplayAbilityTargetData_LocationInfo();
+		
 
 		FVector StartLoc = MeshComp->GetSocketLocation(TargetSocketNames[i-1]);
 		FVector EndLoc = MeshComp->GetSocketLocation(TargetSocketNames[i]);
 
-		LocationInfo->SourceLocation.LiteralTransform.SetLocation(StartLoc);
-		LocationInfo->TargetLocation.LiteralTransform.SetLocation(EndLoc);
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+		TArray<FHitResult> HitResults;
 
-		Data.TargetData.Add(LocationInfo);
+		TArray<AActor*> ActorsToIgnore;
+		if (bIgnoreOwner)
+		{
+			ActorsToIgnore.Add(OwnerActor);
+		}
+
+		EDrawDebugTrace::Type DrawDebugTrace = bDrawDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+
+		UKismetSystemLibrary::SphereTraceMultiForObjects(MeshComp, StartLoc, EndLoc, SphereSweepRadius, 
+			ObjectTypes, false, ActorsToIgnore, DrawDebugTrace, HitResults, false);
+
+		
+		for (const FHitResult& HitResult : HitResults)
+		{
+			if (HitActors.Contains(HitResult.GetActor()))
+			{
+				continue;
+			}
+
+			if (OwnerTeamInterface)
+			{
+				if (OwnerTeamInterface->GetTeamAttitudeTowards(*HitResult.GetActor()) != TargetTeam)
+				{
+					continue;
+				}
+			}
+
+			FGameplayAbilityTargetData_SingleTargetHit* TargetHit = new FGameplayAbilityTargetData_SingleTargetHit(HitResult);
+			Data.TargetData.Add(TargetHit);
+			SendLocalGameplayCue(HitResult);
+		}
 	}
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), EventTag, Data);
+}
 
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), EventTag, Data);
+
+void UAN_SendTargetGroup::SendLocalGameplayCue(const FHitResult& HitResult) const
+{
+	FGameplayCueParameters CueParam;
+	CueParam.Location = HitResult.ImpactPoint;
+	CueParam.Normal = HitResult.ImpactNormal;
+
+	for (const FGameplayTag& GameplayCueTag : TriggerGameplayCueTags)
+	{
+		UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(HitResult.GetActor(), GameplayCueTag, EGameplayCueEvent::Executed, CueParam);
+	}
 }
