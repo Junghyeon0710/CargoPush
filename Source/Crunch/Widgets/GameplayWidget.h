@@ -12,6 +12,7 @@ class UAbilityListView;
 class UGameplayAbility;
 class UValueGauge;
 class UAbilitySystemComponent;
+class UShopWidget;
 /**
  * 
  */
@@ -46,6 +47,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UStatsGauge> StrengthGauge;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UShopWidget> ShopWidget;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;
