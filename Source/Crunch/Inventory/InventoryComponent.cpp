@@ -88,3 +88,22 @@ void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle A
 	OnItemAdded.Broadcast(InventoryItem);
 	UE_LOG(LogTemp, Warning, TEXT("Client Adding Shop Item: %s, with Id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), AssignedHandle.GetHandleId());
 }
+
+void UInventoryComponent::ItemSlotChanged(const FInventoryItemHandle& Handle, int NewSlotNumber)
+{
+	if (UInventoryItem* FoundItem = GetInventoryItemByHandle(Handle))
+	{
+		FoundItem->SetSlot(NewSlotNumber);
+	}
+}
+
+UInventoryItem* UInventoryComponent::GetInventoryItemByHandle(const FInventoryItemHandle& Handle) const
+{
+	UInventoryItem* const* FoundItem = InventoryMap.Find(Handle);
+	if (FoundItem)
+	{
+		return *FoundItem;
+	}
+
+	return nullptr;
+}
