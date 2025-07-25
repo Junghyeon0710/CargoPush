@@ -3,6 +3,8 @@
 
 #include "InventoryItem.h"
 
+#include "PA_ShopItem.h"
+
 FInventoryItemHandle::FInventoryItemHandle()
 	: HandleId{GetInvalidId()}
 {
@@ -48,4 +50,10 @@ bool operator==(const FInventoryItemHandle& Lhs, const FInventoryItemHandle& Rhs
 uint32 GetTypeHash(const FInventoryItemHandle& Key)
 {
 	return Key.GetHandleId();
+}
+
+void UInventoryItem::InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem)
+{
+	Handle = NewHandle;
+	ShopItem = NewShopItem;
 }
