@@ -12,6 +12,7 @@
 #include "Crunch/GAS/CAbilitySystemComponent.h"
 #include "Crunch/GAS/CHeroAttributeSet.h"
 #include "Crunch/GAS/UCAbilitySystemStatics.h"
+#include "Crunch/Inventory/InventoryComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -31,6 +32,8 @@ ACPlayerCharacter::ACPlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.f, 0.f);
 
 	HeroAttributeSet = CreateDefaultSubobject<UCHeroAttributeSet>("Hero Attribute Set");
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("Inventory Component");
 	
 }
 

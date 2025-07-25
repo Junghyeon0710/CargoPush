@@ -105,4 +105,12 @@ private:
 
 	void LerpCameraToLocalOffsetLocation(const FVector& Goal);
 	void TickCameraLocalOffestLerp(FVector Goal);
+
+
+	/*************************************************************/
+	/*                      Inventory                            */
+	/*************************************************************/
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	class UInventoryComponent* InventoryComponent;
 };
