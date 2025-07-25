@@ -104,3 +104,49 @@ void UInventoryItem::SetSlot(int NewSlot)
 {
 	Slot = NewSlot;
 }
+
+bool UInventoryItem::AddStackCount()
+{
+	if (IsStackFull())
+	{
+		return false;
+	}
+
+	++StackCount;
+	return true;
+}
+
+bool UInventoryItem::ReduceStackCount()
+{
+	--StackCount;
+	if (StackCount <= 0)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool UInventoryItem::SetStackCount(int NewStackCount)
+{
+	if (NewStackCount > 0 && NewStackCount <= GetShopItem()->GetMaxStackCount())
+	{
+		StackCount = NewStackCount;
+		return true;
+	}
+
+	return false;
+}
+
+bool UInventoryItem::IsStackFull() const
+{
+	return StackCount >= GetShopItem()->GetMaxStackCount();
+}
+
+bool UInventoryItem::IsForItem(const UPA_ShopItem* Item) const
+{
+	if (!Item)
+		return false;
+
+	return GetShopItem() == Item;
+}
