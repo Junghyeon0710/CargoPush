@@ -9,9 +9,9 @@
 
 class UGameplayWidget;
 class ACPlayerCharacter;
-/**
- * 
- */
+class UInputMappingContext;
+class UInputAction;
+
 UCLASS()
 class CRUNCH_API ACPlayerController : public APlayerController, public IGenericTeamAgentInterface
 {
@@ -27,6 +27,8 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void SetupInputComponent() override;
 	
 private:
 	void SpawnGameplayWidget();
@@ -42,4 +44,13 @@ private:
 
 	UPROPERTY(Replicated)
 	 FGenericTeamId TeamID;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputMappingContext* UIInputMapping;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ShopToggleInputAction;
+
+	UFUNCTION()
+	void ToggleShop();
 };

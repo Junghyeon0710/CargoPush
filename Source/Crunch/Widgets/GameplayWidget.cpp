@@ -5,6 +5,7 @@
 
 #include "AbilityListView.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "ShopWidget.h"
 #include "ValueGauge.h"
 #include "Crunch/GAS/CAbilitySystemComponent.h"
 #include "Crunch/GAS/CAttributeSet.h"
@@ -31,4 +32,30 @@ void UGameplayWidget::NativeConstruct()
 void UGameplayWidget::ConfigureAbilities(const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& Abilities)
 {
 	AbilityListView->ConfigureAbilities(Abilities);
+}
+
+void UGameplayWidget::ToggleShop()
+{
+	if (ShopWidget->GetVisibility() == ESlateVisibility::HitTestInvisible)
+	{
+		ShopWidget->SetVisibility(ESlateVisibility::Visible);
+		PlayShopPopupAnimation(true);
+	}
+	else
+	{
+		ShopWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+		PlayShopPopupAnimation(false);
+	}
+}
+
+void UGameplayWidget::PlayShopPopupAnimation(bool bPlayForward)
+{
+	if (bPlayForward)
+	{
+		PlayAnimationForward(ShopPopupAnimation);
+	}
+	else
+	{
+		PlayAnimationReverse(ShopPopupAnimation);
+	}
 }
