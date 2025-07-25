@@ -35,7 +35,7 @@ private:
 	float SphereSweepRadius = 60.f;
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay Ability")
-	bool bDrawDebug = true;
+	bool bDrawDebug = false;
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay Ability")
 	bool bIgnoreOwner = true;
