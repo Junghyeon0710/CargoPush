@@ -25,9 +25,10 @@ private:
 	class UInventoryComponent* InventoryComponent;
 
 	TArray<UInventoryItemWidget*> ItemWidgets;
-	TMap<FInventoryItemHandle, UInventoryItemWidget*> PopulatedItemEntryWidgets;
+	TMap<FInventoryItemHandle, UInventoryItemWidget*>  PopulatedItemEntryWidgets;
 
 	void ItemAdded(const UInventoryItem* InventoryItem);
+	void ItemStackCountChanged(const FInventoryItemHandle& Handle, int NewCount);
 
 	UInventoryItemWidget* GetNextAvaliableSlot() const;
 };
