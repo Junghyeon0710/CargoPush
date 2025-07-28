@@ -78,6 +78,26 @@ void UInventoryComponent::TryPurchase(const UPA_ShopItem* ItemToPurchase)
 	Server_Purchase(ItemToPurchase);
 }
 
+void UInventoryComponent::SellItem(const FInventoryItemHandle& ItemHandle)
+{
+	Server_SellItem(ItemHandle);
+}
+
+void UInventoryComponent::Server_SellItem_Implementation(FInventoryItemHandle ItemHandle)
+{
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem || !InventoryItem->IsValid())
+		return;
+
+	float SellPrice = InventoryItem->GetShopItem()->GetSellPrice();
+	OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, SellPrice * InventoryItem->GetStackCount());
+	RemoveItem(InventoryItem);
+}
+bool UInventoryComponent::Server_SellItem_Validate(FInventoryItemHandle ItemHandle)
+{
+	return true;
+}
+
 float UInventoryComponent::GetGold() const
 {
 	bool bFound = false;
