@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "PA_ShopItem.h"
+#include "Crunch/Framework/CAssetManager.h"
 #include "Crunch/GAS/CHeroAttributeSet.h"
 
 
@@ -134,6 +135,7 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		UE_LOG(LogTemp, Warning, TEXT("Server Adding Shop Item: %s, with Id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
 		Client_ItemAdded(NewHandle, NewItem);
 		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent);
+		CheckItemCombination(InventoryItem);
 	}
 }
 
@@ -257,4 +259,67 @@ UInventoryItem* UInventoryComponent::GetAvaliableStackForItem(const UPA_ShopItem
 	}
 
 	return nullptr;
+}
+
+bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients)
+{
+	const FItemCollection* Ingredients = UCAssetManager::Get().GetIngredientForItem(Item);
+	if (!Ingredients)
+		return false;
+
+	bool bAllFound = true;
+	for (const UPA_ShopItem* Ingredient : Ingredients->GetItems())
+	{
+		UInventoryItem* FoundItem = TryGetItemForShopItem(Ingredient);
+		if (!FoundItem)
+		{
+			bAllFound = false;
+			break;
+		}
+
+		OutIngredients.Add(FoundItem);
+	}
+
+	return bAllFound;
+}
+
+UInventoryItem* UInventoryComponent::TryGetItemForShopItem(const UPA_ShopItem* Item) const
+{
+	if (!Item)
+		return nullptr;
+
+	for (const TPair<FInventoryItemHandle, UInventoryItem*>& ItemHandlePair : InventoryMap)
+	{
+		if (ItemHandlePair.Value && ItemHandlePair.Value->GetShopItem() == Item)
+		{
+			return ItemHandlePair.Value;
+		}
+	}
+
+	return nullptr;
+}
+
+void UInventoryComponent::CheckItemCombination(const UInventoryItem* NewItem)
+{
+	if (!GetOwner()->HasAuthority())
+		return;
+
+	const FItemCollection* CombinationItems = UCAssetManager::Get().GetCombinationForItem(NewItem->GetShopItem());
+	if (!CombinationItems)
+		return;
+
+	for (const UPA_ShopItem* CombinationItem : CombinationItems->GetItems())
+	{
+		TArray<UInventoryItem*> Ingredients;
+		if (!FoundIngredientForItem(CombinationItem, Ingredients))
+			continue;
+
+		for (UInventoryItem* Ingredient : Ingredients)
+		{
+			RemoveItem(Ingredient);
+		}
+
+		GrantItem(CombinationItem);
+		return;
+	}
 }

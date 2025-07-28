@@ -78,7 +78,7 @@ private:
 	int MaxStackCount = 5;
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShopItem")
-	TArray<TSoftObjectPtr<UPA_ShopItem>> IngredientItems;;
+	TArray<TSoftObjectPtr<UPA_ShopItem>> IngredientItems;
 	
 	
 };
