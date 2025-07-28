@@ -21,6 +21,34 @@ void UInventoryComponent::BeginPlay()
 	
 }
 
+void UInventoryComponent::Server_ActivateItem_Implementation(FInventoryItemHandle ItemHandle)
+{
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem)
+		return;
+
+	InventoryItem->TryActivateGrantedAbility(OwnerAbilitySystemComponent);
+	const UPA_ShopItem* Item = InventoryItem->GetShopItem();
+	if (Item->GetIsConsumable())
+	{
+		ConsumeItem(InventoryItem);
+	}
+}
+
+bool UInventoryComponent::Server_ActivateItem_Validate(FInventoryItemHandle ItemHandle)
+{
+	return true;
+}
+
+void UInventoryComponent::TryActivateItem(const FInventoryItemHandle& ItemHandle)
+{
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem)
+		return;
+
+	Server_ActivateItem(ItemHandle);
+}
+
 void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* ItemToPurchase)
 {
 	if (!ItemToPurchase)
@@ -87,6 +115,50 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		Client_ItemAdded(NewHandle, NewItem);
 		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent);
 	}
+}
+
+void UInventoryComponent::ConsumeItem(UInventoryItem* Item)
+{
+	if (!GetOwner()->HasAuthority())
+		return;
+
+	if (!Item)
+		return;
+
+	Item->ApplyConsumeEffect(OwnerAbilitySystemComponent);
+	if (!Item->ReduceStackCount())
+	{
+		RemoveItem(Item);
+	}
+	else
+	{
+		OnItemStackCountChanged.Broadcast(Item->GetHandle(), Item->GetStackCount());
+		Client_ItemStackCountChanged(Item->GetHandle(), Item->GetStackCount());
+	}
+}
+
+void UInventoryComponent::RemoveItem(UInventoryItem* Item)
+{
+	if (!GetOwner()->HasAuthority())
+		return;
+
+	Item->RemoveGASModifications(OwnerAbilitySystemComponent);
+	OnItemRemoved.Broadcast(Item->GetHandle());
+	InventoryMap.Remove(Item->GetHandle());
+	Client_ItemRemoved(Item->GetHandle());
+}
+
+void UInventoryComponent::Client_ItemRemoved_Implementation(FInventoryItemHandle ItemHandle)
+{
+	if (GetOwner()->HasAuthority())
+		return;
+
+	UInventoryItem* InventoryItem = GetInventoryItemByHandle(ItemHandle);
+	if (!InventoryItem)
+		return;
+
+	OnItemRemoved.Broadcast(ItemHandle);
+	InventoryMap.Remove(ItemHandle);
 }
 
 void UInventoryComponent::Client_ItemStackCountChanged_Implementation(FInventoryItemHandle Handle, int NewCount)
