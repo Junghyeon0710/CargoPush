@@ -6,6 +6,7 @@
 #include "InventoryWidget.generated.h"
 
 class UInventoryItemWidget;
+class UInventoryContextMenuWidget;
 
 UCLASS()
 class UInventoryWidget : public UUserWidget
@@ -15,6 +16,23 @@ class UInventoryWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	TSubclassOf<UInventoryContextMenuWidget> ContextMenuWidgetClass;
+
+	UPROPERTY()
+	UInventoryContextMenuWidget* ContextMenuWidget;
+
+	void SpawnContextMenu();
+
+	UFUNCTION()
+	void SellFocusedItem();
+
+	UFUNCTION()
+	void UseFocusedItem();
+
+	void SetContextMenuVisible(bool bContextMenuVisible);
+	void ToggleContextMenu(const FInventoryItemHandle& ItemHandle);
+	
 	UPROPERTY(meta=(BindWidget))
 	class UWrapBox* ItemList;
 
