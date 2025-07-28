@@ -20,7 +20,7 @@ class CRUNCH_API ITreeNodeInterface
 {
 	GENERATED_BODY()
 
-
+public:
 	virtual UUserWidget* GetWidget() const = 0;
 	virtual TArray<const ITreeNodeInterface*> GetInputs() const = 0;
 	virtual TArray<const ITreeNodeInterface*> GetOuputs() const = 0;
