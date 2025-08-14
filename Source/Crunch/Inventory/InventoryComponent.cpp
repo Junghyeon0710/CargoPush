@@ -19,7 +19,35 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	OwnerAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
-	
+	if (OwnerAbilitySystemComponent)
+		OwnerAbilitySystemComponent->AbilityCommittedCallbacks.AddUObject(this, &UInventoryComponent::AbilityCommitted);
+}
+
+void UInventoryComponent::AbilityCommitted(UGameplayAbility* CommittedAbility)
+{
+	if (!CommittedAbility)
+		return;
+
+	float CooldownTimeRemaining = 0.f;
+	float CooldownDuration = 0.f;
+
+	CommittedAbility->GetCooldownTimeRemainingAndDuration(
+		CommittedAbility->GetCurrentAbilitySpecHandle(),
+		CommittedAbility->GetCurrentActorInfo(),
+		CooldownTimeRemaining,
+		CooldownDuration
+	);
+
+	for (TPair<FInventoryItemHandle, UInventoryItem*>& ItemPair : InventoryMap)
+	{
+		if (!ItemPair.Value)
+			continue;
+
+		if (ItemPair.Value->IsGrantintAbility(CommittedAbility->GetClass()))
+		{
+			OnItemAbilityCommitted.Broadcast(ItemPair.Key, CooldownDuration, CooldownTimeRemaining);
+		}
+	}
 }
 
 void UInventoryComponent::Server_ActivateItem_Implementation(FInventoryItemHandle ItemHandle)

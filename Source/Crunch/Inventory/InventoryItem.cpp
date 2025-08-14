@@ -100,6 +100,23 @@ void UInventoryItem::ApplyGASModifications(UAbilitySystemComponent* AbilitySyste
 	}
 }
 
+bool UInventoryItem::IsGrantintAbility(TSubclassOf<class UGameplayAbility> AbilityClass) const
+{
+	if (!ShopItem)
+		return false;
+
+	TSubclassOf<UGameplayAbility> GrantedAbility = ShopItem->GetGrantedAbility();
+	return GrantedAbility == AbilityClass;
+}
+
+bool UInventoryItem::IsGrantingAnyAbility() const
+{
+	if (!ShopItem)
+		return false;
+
+	return ShopItem->GetGrantedAbility() != nullptr;
+}
+
 void UInventoryItem::SetSlot(int NewSlot)
 {
 	Slot = NewSlot;
