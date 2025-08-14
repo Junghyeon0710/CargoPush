@@ -58,11 +58,18 @@ void UInventoryComponent::Server_Purchase_Implementation(const UPA_ShopItem* Ite
 	if (GetGold() < ItemToPurchase->GetPrice())
 		return;
 
-	if (IsFullFor(ItemToPurchase))
+	if (!IsFullFor(ItemToPurchase))
+	{
+		OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
+        GrantItem(ItemToPurchase);
 		return;
+	}
 
-	OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
-	GrantItem(ItemToPurchase);
+	if (TryItemCombination(ItemToPurchase))
+	{
+		OwnerAbilitySystemComponent->ApplyModToAttribute(UCHeroAttributeSet::GetGoldAttribute(), EGameplayModOp::Additive, -ItemToPurchase->GetPrice());
+	}
+	
 }
 
 bool UInventoryComponent::Server_Purchase_Validate(const UPA_ShopItem* ItemToPurchase)
@@ -127,6 +134,11 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 	}
 	else
 	{
+		if (TryItemCombination(NewItem))
+		{
+			return;
+		}
+		
 		UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
 		FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
 		InventoryItem->InitItem(NewHandle, NewItem);
@@ -135,7 +147,6 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		UE_LOG(LogTemp, Warning, TEXT("Server Adding Shop Item: %s, with Id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
 		Client_ItemAdded(NewHandle, NewItem);
 		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent);
-		CheckItemCombination(InventoryItem);
 	}
 }
 
@@ -168,6 +179,33 @@ void UInventoryComponent::RemoveItem(UInventoryItem* Item)
 	OnItemRemoved.Broadcast(Item->GetHandle());
 	InventoryMap.Remove(Item->GetHandle());
 	Client_ItemRemoved(Item->GetHandle());
+}
+
+bool UInventoryComponent::TryItemCombination(const UPA_ShopItem* NewItem)
+{
+	if (!GetOwner()->HasAuthority())
+		return false; 
+
+	const FItemCollection* CombinationItems = UCAssetManager::Get().GetCombinationForItem(NewItem);
+	if (!CombinationItems)
+		return false;
+
+	for (const UPA_ShopItem* CombinationItem : CombinationItems->GetItems())
+	{
+		TArray<UInventoryItem*> Ingredients;
+		if (!FindIngredientForItem(CombinationItem, Ingredients, TArray<const UPA_ShopItem*>{NewItem}))
+			continue;
+
+		for (UInventoryItem* Ingredient : Ingredients)
+		{
+			RemoveItem(Ingredient);
+		}
+
+		GrantItem(CombinationItem);
+		return true;
+	}
+
+	return false;
 }
 
 void UInventoryComponent::Client_ItemRemoved_Implementation(FInventoryItemHandle ItemHandle)
@@ -283,6 +321,32 @@ bool UInventoryComponent::FoundIngredientForItem(const UPA_ShopItem* Item, TArra
 	return bAllFound;
 }
 
+bool UInventoryComponent::FindIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients, const TArray<const UPA_ShopItem*>& IngredientToIgnore)
+{
+	const FItemCollection* Ingredients = UCAssetManager::Get().GetIngredientForItem(Item);
+	if (!Ingredients)
+		return false;
+
+	bool bAllFound = true;
+	for (const UPA_ShopItem* Ingredient : Ingredients->GetItems())
+	{
+		if (IngredientToIgnore.Contains(Ingredient))
+		{
+			continue;
+		}
+		UInventoryItem* FoundItem = TryGetItemForShopItem(Ingredient);
+		if (!FoundItem)
+		{
+			bAllFound = false;
+			break;
+		}
+
+		OutIngredients.Add(FoundItem);
+	}
+
+	return bAllFound;
+}
+
 UInventoryItem* UInventoryComponent::TryGetItemForShopItem(const UPA_ShopItem* Item) const
 {
 	if (!Item)
@@ -299,27 +363,3 @@ UInventoryItem* UInventoryComponent::TryGetItemForShopItem(const UPA_ShopItem* I
 	return nullptr;
 }
 
-void UInventoryComponent::CheckItemCombination(const UInventoryItem* NewItem)
-{
-	if (!GetOwner()->HasAuthority())
-		return;
-
-	const FItemCollection* CombinationItems = UCAssetManager::Get().GetCombinationForItem(NewItem->GetShopItem());
-	if (!CombinationItems)
-		return;
-
-	for (const UPA_ShopItem* CombinationItem : CombinationItems->GetItems())
-	{
-		TArray<UInventoryItem*> Ingredients;
-		if (!FoundIngredientForItem(CombinationItem, Ingredients))
-			continue;
-
-		for (UInventoryItem* Ingredient : Ingredients)
-		{
-			RemoveItem(Ingredient);
-		}
-
-		GrantItem(CombinationItem);
-		return;
-	}
-}
