@@ -10,6 +10,9 @@
 
 class UPA_ShopItem;
 class UAbilitySystemComponent;
+struct FOnAttributeChangeData;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilityCanCastUpdatedDelegate, bool /*bCanCast*/)
 
 USTRUCT()
 struct FInventoryItemHandle
@@ -42,6 +45,8 @@ class CRUNCH_API UInventoryItem : public UObject
 	GENERATED_BODY()
 
 public:
+	FOnAbilityCanCastUpdatedDelegate OnAbilityCanCastUpdated;
+	
 	// return true is was able to add
 	bool AddStackCount();
 
@@ -67,6 +72,7 @@ public:
 	void ApplyConsumeEffect();
 	void RemoveGASModifications();
 	void ApplyGASModifications();
+	void ManaUpdated(const FOnAttributeChangeData& ChangeData);
 
 	FORCEINLINE int GetStackCount() const { return StackCount; }
 	void SetSlot(int NewSlot);
@@ -75,6 +81,8 @@ public:
 	float GetAbilityCooldownDuration() const;
 	float GetAbilityManaCost() const;
 	bool CanCastAbility() const;
+	FGameplayAbilitySpecHandle GetGrantedAbilitySpecHandle() const { return GrantedAbiltiySpecHandle; }
+	void SetGrantedAbilitySpecHandle(FGameplayAbilitySpecHandle SpecHandle) { GrantedAbiltiySpecHandle = SpecHandle; }
 private:
 	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;
 	UPROPERTY()
