@@ -228,3 +228,17 @@ bool UInventoryItem::IsForItem(const UPA_ShopItem* Item) const
 
 	return GetShopItem() == Item;
 }
+
+bool UInventoryItem::CanCastAbility() const
+{
+	if (!IsGrantingAnyAbility() || !OwnerAbilitySystemComponent)
+		return false;
+
+	FGameplayAbilitySpec* Spec = OwnerAbilitySystemComponent->FindAbilitySpecFromHandle(GrantedAbiltiySpecHandle);
+	if (Spec)
+	{
+		return UCAbilitySystemStatics::CheckAbilityCost(*Spec, *OwnerAbilitySystemComponent);
+	}
+
+	return UCAbilitySystemStatics::CheckAbilityCostStatic(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent);
+}

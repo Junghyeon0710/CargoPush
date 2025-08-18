@@ -5,7 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "Abilities/GameplayAbility.h""
+#include "Abilities/GameplayAbility.h"
 
 FItemCollection::FItemCollection()
 	:Items{}

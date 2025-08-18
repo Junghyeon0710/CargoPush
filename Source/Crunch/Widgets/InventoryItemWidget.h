@@ -36,6 +36,8 @@ public:
 
 private:
 
+	void UpdateCanCastDisplay(bool bCanCast);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	UTexture2D* EmptyTexture;
 
