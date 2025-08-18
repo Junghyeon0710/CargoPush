@@ -70,6 +70,8 @@ void ACPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 		{
 			EnhancedInputComponent->BindAction(InputActionPair.Value, ETriggerEvent::Triggered, this, &ThisClass::HandleAbilityInput, InputActionPair.Key);
 		}
+
+		EnhancedInputComponent->BindAction(UseInventoryItemAction, ETriggerEvent::Triggered, this, &ThisClass::UseInventoryItem);
 	}
 }
 
@@ -98,6 +100,12 @@ void ACPlayerCharacter::LearnAbilityLeaderDown(const FInputActionValue& InputAct
 void ACPlayerCharacter::LearnAbilityLeaderUp(const FInputActionValue& InputActionValue)
 {
 	bIsLearnAbilityLeaderDown = false;
+}
+
+void ACPlayerCharacter::UseInventoryItem(const FInputActionValue& InputActionValue)
+{
+	int Value = FMath::RoundToInt(InputActionValue.Get<float>());
+	InventoryComponent->TryActivateItemInSlot(Value-1);
 }
 
 void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID InputID)

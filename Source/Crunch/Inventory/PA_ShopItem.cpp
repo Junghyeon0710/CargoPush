@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Abilities/GameplayAbility.h"
 
 FItemCollection::FItemCollection()
 	:Items{}
@@ -49,4 +50,14 @@ FPrimaryAssetType UPA_ShopItem::GetShopItemAssetType()
 UTexture2D* UPA_ShopItem::GetIcon() const
 {
 	return Icon.LoadSynchronous();
+}
+
+UGameplayAbility* UPA_ShopItem::GetGrantedAbilityCDO() const
+{
+	if (GrantedAbility)
+	{
+		return Cast<UGameplayAbility>(GrantedAbility->GetDefaultObject());
+	}
+
+	return nullptr;
 }

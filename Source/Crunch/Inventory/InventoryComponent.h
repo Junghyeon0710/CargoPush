@@ -13,6 +13,7 @@ class UPA_ShopItem;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemAddedDelegate, const UInventoryItem* /*NewItem*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemStackCountChangeDelegate, const FInventoryItemHandle&, int /*NewCount*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemRemovedDelegate, const FInventoryItemHandle& /*ItemHandle*/);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnItemAbilityCommitted, const FInventoryItemHandle&, float /*CooldownDuration*/, float /*CooldownTimeRemaining*/);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CRUNCH_API UInventoryComponent : public UActorComponent
@@ -25,6 +26,7 @@ public:
 	FOnItemAddedDelegate OnItemAdded;
 	FOnItemRemovedDelegate OnItemRemoved;
 	FOnItemStackCountChangeDelegate OnItemStackCountChanged;
+	FOnItemAbilityCommitted OnItemAbilityCommitted;
 	void TryActivateItem(const FInventoryItemHandle& ItemHandle);
 	void TryPurchase(const UPA_ShopItem* ItemToPurchase);
 	void SellItem(const FInventoryItemHandle& ItemHandle);
@@ -39,7 +41,9 @@ public:
 	bool IsAllSlotOccupied() const;
 	UInventoryItem* GetAvaliableStackForItem(const UPA_ShopItem* Item) const;
 	bool FoundIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients);
+	bool FindIngredientForItem(const UPA_ShopItem* Item, TArray<UInventoryItem*>& OutIngredients, const TArray<const UPA_ShopItem*>& IngredientToIgnore = TArray<const UPA_ShopItem*>{});
 	UInventoryItem* TryGetItemForShopItem(const UPA_ShopItem* Item) const;
+	void TryActivateItemInSlot(int SlotNumber);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
@@ -54,6 +58,8 @@ private:
 	UPROPERTY()
 	TMap<FInventoryItemHandle, UInventoryItem*> InventoryMap;
 
+	void AbilityCommitted(class UGameplayAbility* CommittedAbility);
+
 	/*********************************************************/
 	/*                   Server                              */
 	/*********************************************************/
@@ -67,14 +73,14 @@ private:
 	void GrantItem(const UPA_ShopItem* NewItem);
 	void ConsumeItem(UInventoryItem* Item);
 	void RemoveItem(UInventoryItem* Item);
-	void CheckItemCombination(const UInventoryItem* NewItem);
+	bool TryItemCombination(const UPA_ShopItem* NewItem);
 
 	/*********************************************************/
 	/*                   Client                              */
 	/*********************************************************/
 private:
 	UFUNCTION(Client, Reliable)
-	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item);
+	void Client_ItemAdded(FInventoryItemHandle AssignedHandle, const UPA_ShopItem* Item, FGameplayAbilitySpecHandle GrantedAbilitySpecHandle);
 
 	UFUNCTION(Client, Reliable)
 	void Client_ItemRemoved(FInventoryItemHandle ItemHandle);

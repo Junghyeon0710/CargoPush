@@ -1,5 +1,6 @@
 ﻿#include "ShopWidget.h"
 
+#include "ItemTreeWidget.h"
 #include "ShopItemWidget.h"
 #include "Components/TileView.h"
 #include "Crunch/Framework/CAssetManager.h"
@@ -41,8 +42,18 @@ void UShopWidget::ShopItemWidgetGenerated(UUserWidget& NewWidget)
 		if (OwnerInventoryComponent)
 		{
 			ItemWidget->OnItemPurchaseIssued.AddUObject(OwnerInventoryComponent, &UInventoryComponent::TryPurchase);
+			ItemWidget->OnShopItemClicked.AddUObject(this, &UShopWidget::ShowItemCombination);
 		}
+		ItemWidget->OnShopItemClicked.AddUObject(this, &UShopWidget::ShowItemCombination);
 		ItemsMap.Add(ItemWidget->GetShopItem(), ItemWidget);
 		
+	}
+}
+
+void UShopWidget::ShowItemCombination(const UShopItemWidget* ItemWidget)
+{
+	if (CombinationTree)
+	{
+		CombinationTree->DrawFromNode(ItemWidget);
 	}
 }

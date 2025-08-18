@@ -12,11 +12,12 @@ UCLASS()
 class CRUNCH_API UItemTreeWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
+public:
+	void DrawFromNode(const ITreeNodeInterface* NodeInterface);
 private:
 	void DrawStream(
 		bool bUpperStream, 
-		const ITreeNodeInterface* StartingNodeInteface,
+		const ITreeNodeInterface* StartingNodeInterface,
 		UUserWidget* StartingNodeWidget, 
 		class UCanvasPanelSlot* StartingNodeSlot,
 		int StartingNodeDepth,
@@ -30,6 +31,7 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	class UCanvasPanel* RootPanel;
+	const UObject* CurrentCenterItem;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tree")
 	FVector2D NodeSize = FVector2D{ 60.f };
