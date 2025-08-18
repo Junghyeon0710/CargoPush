@@ -60,7 +60,7 @@ void UCAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 
 bool UCAnimInstance::ShouldDoFullbody() const
 {
-	return (GetSpeed() <= 0) && !(GetIsAiming());
+	return GetSpeed() <= 0 && !GetIsAiming();
 }
 
 void UCAnimInstance::OwnerAimTagChanged(const FGameplayTag Tag, int32 NewCount)
