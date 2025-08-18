@@ -59,18 +59,23 @@ public:
 	
 	UInventoryItem();
 	bool IsValid() const;
-	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem);
+	void InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem, UAbilitySystemComponent* AbilitySystemComponent);
 	const UPA_ShopItem* GetShopItem() const { return ShopItem; }
 	FInventoryItemHandle GetHandle() const { return Handle; }
 	
-	bool TryActivateGrantedAbility(UAbilitySystemComponent* AbilitySystemComponent);
-	void ApplyConsumeEffect(UAbilitySystemComponent* AbilitySystemComponent);
-	void RemoveGASModifications(UAbilitySystemComponent* AbilitySystemComponent);
-	void ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent);
+	bool TryActivateGrantedAbility();
+	void ApplyConsumeEffect();
+	void RemoveGASModifications();
+	void ApplyGASModifications();
 
 	FORCEINLINE int GetStackCount() const { return StackCount; }
 	void SetSlot(int NewSlot);
+
+	float GetAbilityCooldownTimeRemaining() const;
+	float GetAbilityCooldownDuration() const;
+	float GetAbilityManaCost() const;
 private:
+	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;
 	UPROPERTY()
 	const UPA_ShopItem* ShopItem;
 	FInventoryItemHandle Handle;

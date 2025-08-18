@@ -56,7 +56,7 @@ void UInventoryComponent::Server_ActivateItem_Implementation(FInventoryItemHandl
 	if (!InventoryItem)
 		return;
 
-	InventoryItem->TryActivateGrantedAbility(OwnerAbilitySystemComponent);
+	InventoryItem->TryActivateGrantedAbility();
 	const UPA_ShopItem* Item = InventoryItem->GetShopItem();
 	if (Item->GetIsConsumable())
 	{
@@ -169,12 +169,11 @@ void UInventoryComponent::GrantItem(const UPA_ShopItem* NewItem)
 		
 		UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
 		FInventoryItemHandle NewHandle = FInventoryItemHandle::CreateHandle();
-		InventoryItem->InitItem(NewHandle, NewItem);
+		InventoryItem->InitItem(NewHandle, NewItem, OwnerAbilitySystemComponent);
 		InventoryMap.Add(NewHandle, InventoryItem);
 		OnItemAdded.Broadcast(InventoryItem);
 		UE_LOG(LogTemp, Warning, TEXT("Server Adding Shop Item: %s, with Id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), NewHandle.GetHandleId());
 		Client_ItemAdded(NewHandle, NewItem);
-		InventoryItem->ApplyGASModifications(OwnerAbilitySystemComponent);
 	}
 }
 
@@ -186,7 +185,7 @@ void UInventoryComponent::ConsumeItem(UInventoryItem* Item)
 	if (!Item)
 		return;
 
-	Item->ApplyConsumeEffect(OwnerAbilitySystemComponent);
+	Item->ApplyConsumeEffect();
 	if (!Item->ReduceStackCount())
 	{
 		RemoveItem(Item);
@@ -203,7 +202,7 @@ void UInventoryComponent::RemoveItem(UInventoryItem* Item)
 	if (!GetOwner()->HasAuthority())
 		return;
 
-	Item->RemoveGASModifications(OwnerAbilitySystemComponent);
+	Item->RemoveGASModifications();
 	OnItemRemoved.Broadcast(Item->GetHandle());
 	InventoryMap.Remove(Item->GetHandle());
 	Client_ItemRemoved(Item->GetHandle());
@@ -268,7 +267,7 @@ void UInventoryComponent::Client_ItemAdded_Implementation(FInventoryItemHandle A
 		return;
 
 	UInventoryItem* InventoryItem = NewObject<UInventoryItem>();
-	InventoryItem->InitItem(AssignedHandle, Item);
+	InventoryItem->InitItem(AssignedHandle, Item, OwnerAbilitySystemComponent);
 	InventoryMap.Add(AssignedHandle, InventoryItem);
 	OnItemAdded.Broadcast(InventoryItem);
 	UE_LOG(LogTemp, Warning, TEXT("Client Adding Shop Item: %s, with Id: %d"), *(InventoryItem->GetShopItem()->GetItemName().ToString()), AssignedHandle.GetHandleId());

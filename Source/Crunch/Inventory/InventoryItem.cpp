@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "PA_ShopItem.h"
+#include "Crunch/GAS/UCAbilitySystemStatics.h"
 
 FInventoryItemHandle::FInventoryItemHandle()
 	: HandleId{GetInvalidId()}
@@ -65,37 +66,36 @@ bool UInventoryItem::IsValid() const
 }
 
 
-void UInventoryItem::InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem)
+void UInventoryItem::InitItem(const FInventoryItemHandle& NewHandle, const UPA_ShopItem* NewShopItem, UAbilitySystemComponent* AbilitySystemComponent)
 {
 	Handle = NewHandle;
 	ShopItem = NewShopItem;
+	OwnerAbilitySystemComponent = AbilitySystemComponent;
+	ApplyGASModifications();
 }
 
-void UInventoryItem::ApplyGASModifications(UAbilitySystemComponent* AbilitySystemComponent)
+void UInventoryItem::ApplyGASModifications()
 {
-	if (!GetShopItem() || !AbilitySystemComponent)
+	if (!GetShopItem() || !OwnerAbilitySystemComponent)
 		return;
 
-	if (!AbilitySystemComponent->GetOwner() || !AbilitySystemComponent->GetOwner()->HasAuthority())
+	if (!OwnerAbilitySystemComponent->GetOwner() || !OwnerAbilitySystemComponent->GetOwner()->HasAuthority())
 		return;
 
 	TSubclassOf<UGameplayEffect> EquipEffect = GetShopItem()->GetEquippedEffect();
 	if (EquipEffect)
 	{
-		AppliedEquipedEffectHandle = AbilitySystemComponent->BP_ApplyGameplayEffectToSelf(EquipEffect, 1, AbilitySystemComponent->MakeEffectContext());
+		AppliedEquipedEffectHandle = OwnerAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(EquipEffect, 1, OwnerAbilitySystemComponent->MakeEffectContext());
 	}
 
 	TSubclassOf<UGameplayAbility> GrantedAbility = GetShopItem()->GetGrantedAbility();
 	if (GrantedAbility)
 	{
-		const FGameplayAbilitySpec* FoundSpec = AbilitySystemComponent->FindAbilitySpecFromClass(GrantedAbility);
-		if (FoundSpec)
+		const FGameplayAbilitySpec* FoundSpec = OwnerAbilitySystemComponent->FindAbilitySpecFromClass(GrantedAbility);
+	
+		if (GrantedAbility)
 		{
-			GrantedAbiltiySpecHandle = FoundSpec->Handle;
-		}
-		else
-		{
-			GrantedAbiltiySpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
+			GrantedAbiltiySpecHandle = OwnerAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(GrantedAbility));
 		}
 	}
 }
@@ -120,6 +120,32 @@ bool UInventoryItem::IsGrantingAnyAbility() const
 void UInventoryItem::SetSlot(int NewSlot)
 {
 	Slot = NewSlot;
+}
+
+float UInventoryItem::GetAbilityCooldownTimeRemaining() const
+{
+	if (!IsGrantingAnyAbility())
+	{
+		return 0.f;
+	}
+
+	return UCAbilitySystemStatics::GetCooldownRemainingFor(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent);
+}
+
+float UInventoryItem::GetAbilityCooldownDuration() const
+{
+	if (!IsGrantingAnyAbility())
+		return 0.f;
+
+	return UCAbilitySystemStatics::GetCooldownDurationFor(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent, 1);
+}
+
+float UInventoryItem::GetAbilityManaCost() const
+{
+	if (!IsGrantingAnyAbility())
+		return 0.f;
+
+	return UCAbilitySystemStatics::GetManaCostFor(GetShopItem()->GetGrantedAbilityCDO(), *OwnerAbilitySystemComponent, 1);
 }
 
 bool UInventoryItem::AddStackCount()
@@ -155,18 +181,18 @@ bool UInventoryItem::SetStackCount(int NewStackCount)
 	return false;
 }
 
-bool UInventoryItem::TryActivateGrantedAbility(UAbilitySystemComponent* AbilitySystemComponent)
+bool UInventoryItem::TryActivateGrantedAbility()
 {
 	if (!GrantedAbiltiySpecHandle.IsValid())
 		return false;
 
-	if (AbilitySystemComponent && AbilitySystemComponent->TryActivateAbility(GrantedAbiltiySpecHandle))
+	if (OwnerAbilitySystemComponent && OwnerAbilitySystemComponent->TryActivateAbility(GrantedAbiltiySpecHandle))
 		return true;
 
 	return false;
 }
 
-void UInventoryItem::ApplyConsumeEffect(UAbilitySystemComponent* AbilitySystemComponent)
+void UInventoryItem::ApplyConsumeEffect()
 {
 	if (!ShopItem)
 		return;
@@ -175,19 +201,19 @@ void UInventoryItem::ApplyConsumeEffect(UAbilitySystemComponent* AbilitySystemCo
 	if (!ConsumeEffect)
 		return;
 
-	AbilitySystemComponent->BP_ApplyGameplayEffectToSelf(ConsumeEffect, 1, AbilitySystemComponent->MakeEffectContext());
+	OwnerAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(ConsumeEffect, 1, OwnerAbilitySystemComponent->MakeEffectContext());
 }
 
-void UInventoryItem::RemoveGASModifications(UAbilitySystemComponent* AbilitySystemComponent)
+void UInventoryItem::RemoveGASModifications()
 {
-	if (!AbilitySystemComponent)
+	if (!OwnerAbilitySystemComponent)
 		return;
 
 	if (AppliedEquipedEffectHandle.IsValid())
-		AbilitySystemComponent->RemoveActiveGameplayEffect(AppliedEquipedEffectHandle);
+		OwnerAbilitySystemComponent->RemoveActiveGameplayEffect(AppliedEquipedEffectHandle);
 
 	if (GrantedAbiltiySpecHandle.IsValid())
-		AbilitySystemComponent->SetRemoveAbilityOnEnd(GrantedAbiltiySpecHandle);
+		OwnerAbilitySystemComponent->SetRemoveAbilityOnEnd(GrantedAbiltiySpecHandle);
 }
 
 bool UInventoryItem::IsStackFull() const
