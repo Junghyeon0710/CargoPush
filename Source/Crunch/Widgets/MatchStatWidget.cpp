@@ -3,6 +3,7 @@
 
 #include "MatchStatWidget.h"
 
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Crunch/Framework/StormCore.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,6 +16,7 @@ void UMatchStatWidget::NativeConstruct()
 	{
 		StormCore->OnTeamInfluenceCountUpdated.AddUObject(this, &UMatchStatWidget::UpdateTeamInfluence);
 		StormCore->OnGoalReachedDelegate.AddUObject(this, &UMatchStatWidget::MatchFinished);
+		GetWorld()->GetTimerManager().SetTimer(UpdateProgressTimerHandle, this, &UMatchStatWidget::UpdateProgress, ProgressUpdateInterval, true);
 	}
 }
 
@@ -26,5 +28,17 @@ void UMatchStatWidget::UpdateTeamInfluence(int TeamOneCount, int TeamTwoCount)
 
 void UMatchStatWidget::MatchFinished(AActor* ViewTarget, int WinningTeam)
 {
-		
+	float Progress = WinningTeam == 0 ? 1 : 0;
+
+	GetWorld()->GetTimerManager().ClearTimer(UpdateProgressTimerHandle);
+	ProgressImage->GetDynamicMaterial()->SetScalarParameterValue(ProgressDynamicMaterialParamName, Progress);
+}
+
+void UMatchStatWidget::UpdateProgress()
+{
+	if (StormCore)
+	{
+		float Progress = StormCore->GetProgress();
+		ProgressImage->GetDynamicMaterial()->SetScalarParameterValue(ProgressDynamicMaterialParamName, Progress);
+	}
 }
