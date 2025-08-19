@@ -77,6 +77,7 @@ void ACPlayerController::SetupInputComponent()
 	if (EnhancedInputComp)
 	{
 		EnhancedInputComp->BindAction(ShopToggleInputAction, ETriggerEvent::Triggered, this, &ACPlayerController::ToggleShop);
+		EnhancedInputComp->BindAction(ToggleGameplayMenuAction, ETriggerEvent::Triggered, this, &ACPlayerController::ToggleGameplayMenu);
 	}
 }
 
@@ -85,5 +86,13 @@ void ACPlayerController::ToggleShop()
 	if(GameplayWidget)
 	{
 		GameplayWidget->ToggleShop();
+	}
+}
+
+void ACPlayerController::ToggleGameplayMenu()
+{
+	if (GameplayWidget)
+	{
+		GameplayWidget->ToggleGameplayMenu();
 	}
 }
