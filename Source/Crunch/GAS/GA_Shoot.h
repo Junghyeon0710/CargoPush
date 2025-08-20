@@ -6,9 +6,8 @@
 #include "CGameplayAbility.h"
 #include "GA_Shoot.generated.h"
 
-/**
- * 
- */
+class UAnimMontage;
+ 
 UCLASS()
 class CRUNCH_API UGA_Shoot : public UCGameplayAbility
 {
@@ -19,6 +18,9 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Anim")
+	TObjectPtr<UAnimMontage> ShootMontage;
+	
 	static FGameplayTag GetShootTag();
 
 	UFUNCTION()
