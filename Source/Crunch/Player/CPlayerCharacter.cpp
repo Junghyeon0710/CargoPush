@@ -110,6 +110,7 @@ void ACPlayerCharacter::UseInventoryItem(const FInputActionValue& InputActionVal
 
 void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID InputID)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("InputID: %d"), (int32)InputID));
 	bool bPressed = InputActionValue.Get<bool>();
 
 	if (bPressed && bIsLearnAbilityLeaderDown)
@@ -128,8 +129,9 @@ void ACPlayerCharacter::HandleAbilityInput(const FInputActionValue& InputActionV
 
 	if (InputID == ECAbilityInputID::BasicAttack)
 	{
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UCAbilitySystemStatics::GetBasicAttackInputPressedTag(), FGameplayEventData());
-		Server_SendGameplayEventToSelf(UCAbilitySystemStatics::GetBasicAttackInputPressedTag(), FGameplayEventData());
+		FGameplayTag BasicAttackTag = bPressed ? UCAbilitySystemStatics::GetBasicAttackInputPressedTag() : UCAbilitySystemStatics::GetBasicAttackInputReleasedTag();
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this , BasicAttackTag, FGameplayEventData());
+		Server_SendGameplayEventToSelf(BasicAttackTag, FGameplayEventData());
 	}
 }
 
