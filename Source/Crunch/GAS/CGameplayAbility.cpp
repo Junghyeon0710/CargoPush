@@ -228,3 +228,12 @@ ACharacter* UCGameplayAbility::GetOwningAvatarCharacter()
 
 	return AvatarCharacter;
 }
+
+void UCGameplayAbility::SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData)
+{
+	UAbilitySystemComponent* OwnerASC = GetAbilitySystemComponentFromActorInfo();
+	if (OwnerASC)
+	{
+		OwnerASC->HandleGameplayEvent(EventTag, &EventData);
+	}
+}
