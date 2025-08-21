@@ -33,6 +33,7 @@ protected:
 	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetDataHandle, const FVector& PushVal);
 	void PlayMontageLocally(UAnimMontage* MontageToPlay);
 	void StopMontageAfterCurrentSection(UAnimMontage* MontageToStop);
+	FGenericTeamId GetOwnerTeamId() const;
 
 	ACharacter* GetOwningAvatarCharacter();
 	void ApplyGameplayEffectToHitResultActor(const FHitResult& HitResult, TSubclassOf<UGameplayEffect> GameplayEffect, int32 Level = 1);
