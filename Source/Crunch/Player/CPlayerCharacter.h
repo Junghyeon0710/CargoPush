@@ -42,7 +42,7 @@ private:
 	/*******************************************************/
 
 private:
-	virtual void OnAimStateChanged(bool bIsAiming) override;
+	virtual void OnAimStateChanged(bool bIsAimming) override;
 
 	/*******************************************************/
 	/*                     Input						   */
@@ -79,7 +79,8 @@ private:
 	bool bIsLearnAbilityLeaderDown = false;
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, ECAbilityInputID InputID);
 	void SetInputEnabledFromPlayerController(bool bEnabled);
-
+	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const  override;
+	
 	/*******************************************************/
 	/*						Stun						   */
 	/*******************************************************/
