@@ -153,6 +153,12 @@ void ACPlayerCharacter::SetInputEnabledFromPlayerController(bool bEnabled)
 	}
 }
 
+void ACPlayerCharacter::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
+{
+	OutLocation = ViewCamera->GetComponentLocation();
+	OutRotation = ViewCamera->GetComponentRotation();
+}
+
 void ACPlayerCharacter::OnStun()
 {
 	SetInputEnabledFromPlayerController(false);
@@ -214,10 +220,11 @@ FVector ACPlayerCharacter::GetMoveFwdDir() const
 	return FVector::CrossProduct(GetLookRightDir(), FVector::UpVector);
 }
 
-void ACPlayerCharacter::OnAimStateChanged(bool bIsAiming)
+void ACPlayerCharacter::OnAimStateChanged(bool bIsAimming)
 {
-	if (IsLocallyControlledByPlayer())
-	{
-		LerpCameraToLocalOffsetLocation(bIsAiming ? CameraAimLocalOffset : FVector::ZeroVector);
-	}
+	// if (IsLocallyControlledByPlayer())
+	// {
+	// 	LerpCameraToLocalOffsetLocation(bIsAiming ? CameraAimLocalOffset : FVector::ZeroVector);
+	// }
+	LerpCameraToLocalOffsetLocation(bIsAimming ? CameraAimLocalOffset : FVector{0.f});
 }

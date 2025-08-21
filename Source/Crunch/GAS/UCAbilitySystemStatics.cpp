@@ -79,7 +79,33 @@ FGameplayTag UCAbilitySystemStatics::GetGoldAttributeTag()
 	return FGameplayTag::RequestGameplayTag("Attribute.Gold");
 }
 
+FGameplayTag UCAbilitySystemStatics::GetCrosshairTag()
+{
+	return FGameplayTag::RequestGameplayTag("Stats.Crosshair");
+}
+
+FGameplayTag UCAbilitySystemStatics::GetTargetUpdatedTag()
+{
+	return FGameplayTag::RequestGameplayTag("Target.Updated");
+}
+
+bool UCAbilitySystemStatics::IsActorDead(const AActor* ActorToCheck)
+{
+	return ActorHasTag(ActorToCheck, GetDeadStatTag());
+}
+
 bool UCAbilitySystemStatics::IsHero(const AActor* ActorToCheck)
+{
+	return ActorHasTag(ActorToCheck, GetHeroRoleTag());
+	
+}
+
+bool UCAbilitySystemStatics::IsAbilityAtMaxLevel(const FGameplayAbilitySpec& Spec)
+{
+	return Spec.Level >= 4;
+}
+
+bool UCAbilitySystemStatics::ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag)
 {
 	const IAbilitySystemInterface* ActorISA = Cast<IAbilitySystemInterface>(ActorToCheck);
 	if (ActorISA)
@@ -87,16 +113,10 @@ bool UCAbilitySystemStatics::IsHero(const AActor* ActorToCheck)
 		UAbilitySystemComponent* ActorASC = ActorISA->GetAbilitySystemComponent();
 		if (ActorASC)
 		{
-			return ActorASC->HasMatchingGameplayTag(GetHeroRoleTag());
+			return ActorASC->HasMatchingGameplayTag(Tag);
 		}
 	}
-
 	return false;
-}
-
-bool UCAbilitySystemStatics::IsAbilityAtMaxLevel(const FGameplayAbilitySpec& Spec)
-{
-	return Spec.Level >= 4;
 }
 
 float UCAbilitySystemStatics::GetStaticCooldownDurationForAbility(const UGameplayAbility* Ability)

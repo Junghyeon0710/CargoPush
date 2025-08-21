@@ -31,8 +31,12 @@ public:
 	static FGameplayTag GetHeroRoleTag();
 	static FGameplayTag GetExperienceAttributeTag();
 	static FGameplayTag GetGoldAttributeTag();
-	
+	static FGameplayTag GetCrosshairTag();
+	static FGameplayTag GetTargetUpdatedTag();
+
+	static bool IsActorDead(const AActor* ActorToCheck);
 	static bool IsHero(const AActor* ActorToCheck);
+	static bool ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag);
 	static bool IsAbilityAtMaxLevel(const FGameplayAbilitySpec& Spec);
 	
 

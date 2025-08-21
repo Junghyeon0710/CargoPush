@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "GenericTeamAgentInterface.h"
 #include "Crunch/GAS/CGameAbilityTypes.h"
+#include "Crunch/Widgets/RenderActorTargetInterface.h"
 #include "CCharacter.generated.h"
 
 struct FOnAttributeChangeData;
@@ -18,7 +19,7 @@ struct FGameplayEventData;
 class UGameplayAbility;
 
 UCLASS()
-class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
+class CRUNCH_API ACCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface, public IRenderActorTargetInterface
 {
 	GENERATED_BODY()
 
@@ -32,6 +33,15 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const;
+	virtual FVector GetCaptureLocalPosition() const override;
+	virtual FRotator GetCaptureLocalRotation() const override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Capture")
+	FVector HeadshotCaptureLocalPosition;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Capture")
+	FRotator HeadshotCaptureLocalRotation;
 	
 protected:
 	virtual void BeginPlay() override;
