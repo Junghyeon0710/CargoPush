@@ -156,7 +156,7 @@ void ACPlayerCharacter::SetInputEnabledFromPlayerController(bool bEnabled)
 void ACPlayerCharacter::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
 {
 	OutLocation = ViewCamera->GetComponentLocation();
-	OutRotation = ViewCamera->GetComponentRotation();
+	OutRotation = GetBaseAimRotation();
 }
 
 void ACPlayerCharacter::OnStun()
