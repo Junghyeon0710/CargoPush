@@ -77,7 +77,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	float YawSpeedSmoothLerpSpeed = 1.f;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	float YawSpeedLerpToZeroSpeed = 30.f;
 	FRotator BodyPrevRot;
 	FRotator LookRotOffset;
 };
