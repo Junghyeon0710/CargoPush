@@ -35,7 +35,7 @@ void UAbilityGauge::NativeConstruct()
 		}
 	}
 	
-	OwnerAbilitySystemComponet = OwnerASC;
+	OwnerAbilitySystemComponent = OwnerASC;
 	WholeNumberFormationOptions.MaximumFractionalDigits = 0;
 	TwoDigitNumberFormationOptions.MaximumFractionalDigits = 2;
 }
@@ -109,15 +109,20 @@ void UAbilityGauge::UpdateCooldown()
 
 const FGameplayAbilitySpec* UAbilityGauge::GetAbilitySpec()
 {
-	if (!CachedAbilitySpec)
+	if (!OwnerAbilitySystemComponent)
+		return nullptr;
+
+	if (!AbilityCDO)
+		return nullptr;
+
+	if (!CachedAbilitySpecHandle.IsValid())
 	{
-		if (AbilityCDO && OwnerAbilitySystemComponet)
-		{
-			CachedAbilitySpec = OwnerAbilitySystemComponet->FindAbilitySpecFromClass(AbilityCDO->GetClass());
-		}
+		FGameplayAbilitySpec* FoundAbilitySpec = OwnerAbilitySystemComponent->FindAbilitySpecFromClass(AbilityCDO->GetClass());
+		CachedAbilitySpecHandle = FoundAbilitySpec->Handle;
+		return FoundAbilitySpec;
 	}
 
-	return CachedAbilitySpec;
+	return OwnerAbilitySystemComponent->FindAbilitySpecFromHandle(CachedAbilitySpecHandle);;
 }
 
 void UAbilityGauge::AbilitySpecUpdated(const FGameplayAbilitySpec& AbilitySpec)
@@ -131,8 +136,8 @@ void UAbilityGauge::AbilitySpecUpdated(const FGameplayAbilitySpec& AbilitySpec)
 	LevelGauge->GetDynamicMaterial()->SetScalarParameterValue(AbilityLevelParmName, AbilitySpec.Level);
 	UpdatedCanCast();
 
-	float NewCooldownDuration = UCAbilitySystemStatics::GetCooldownDurationFor(AbilitySpec.Ability, *OwnerAbilitySystemComponet, AbilitySpec.Level);
-	float NewCost = UCAbilitySystemStatics::GetManaCostFor(AbilitySpec.Ability, *OwnerAbilitySystemComponet, AbilitySpec.Level);
+	float NewCooldownDuration = UCAbilitySystemStatics::GetCooldownDurationFor(AbilitySpec.Ability, *OwnerAbilitySystemComponent, AbilitySpec.Level);
+	float NewCost = UCAbilitySystemStatics::GetManaCostFor(AbilitySpec.Ability, *OwnerAbilitySystemComponent, AbilitySpec.Level);
 	CooldownDurationText->SetText(FText::AsNumber(NewCooldownDuration));
 	CostText->SetText(FText::AsNumber(NewCost));
 }
@@ -143,7 +148,7 @@ void UAbilityGauge::UpdatedCanCast()
 	bool bCanCast = bIsAbilityLeaned;
 	if (AbilitySpec)
 	{
-		if (OwnerAbilitySystemComponet && !UCAbilitySystemStatics::CheckAbilityCost(*AbilitySpec, *OwnerAbilitySystemComponet))
+		if (OwnerAbilitySystemComponent && !UCAbilitySystemStatics::CheckAbilityCost(*AbilitySpec, *OwnerAbilitySystemComponent))
 		{
 			bCanCast = false;
 		}
