@@ -18,6 +18,14 @@ class CRUNCH_API UGA_Lazer : public UCGameplayAbility
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	static FGameplayTag GetShootTag();
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetRange = 4000;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float DetectionCylinderRadius = 30.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float TargetingInterval = 0.3f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> OnGoingConsumtionEffect;
