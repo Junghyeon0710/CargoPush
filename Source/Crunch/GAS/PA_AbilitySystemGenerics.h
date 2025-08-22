@@ -43,7 +43,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Level")
 	FName ExperienceRowName = "ExperienceNeededToReachLevel";
-
+	 
 	UPROPERTY(EditDefaultsOnly, Category = "Level")
 	TObjectPtr<UCurveTable> ExperienceCurveTable;
 	

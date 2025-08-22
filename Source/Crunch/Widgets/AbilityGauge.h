@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
 #include "AbilityGauge.generated.h"
@@ -96,8 +97,8 @@ private:
 	void CooldownFinished();
 	void UpdateCooldown();
 	
-	const UAbilitySystemComponent* OwnerAbilitySystemComponet;
-	const FGameplayAbilitySpec* CachedAbilitySpec;
+	const UAbilitySystemComponent* OwnerAbilitySystemComponent;
+	FGameplayAbilitySpecHandle CachedAbilitySpecHandle;
 
 	const FGameplayAbilitySpec* GetAbilitySpec();
 
