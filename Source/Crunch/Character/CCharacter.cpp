@@ -114,10 +114,12 @@ void ACCharacter::BindGASChangeDelegate()
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetDeadStatTag()).AddUObject(this, &ThisClass::DeathTagUpdated);
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetStunStatTag()).AddUObject(this, &ThisClass::StunTagUpdated);
 		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetAimStatTag()).AddUObject(this, &ThisClass::AimTagUpdated);
+		CAbilitySystemComponent->RegisterGameplayTagEvent(UCAbilitySystemStatics::GetFocusStatTag()).AddUObject(this, &ThisClass::FocusTagUpdated);
 
 		CAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetMoveSpeedAttribute()).AddUObject(this, &ThisClass::MoveSpeedUpdated);
 		CAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::MaxHealthUpdated);
 		CAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetMaxManaAttribute()).AddUObject(this, &ThisClass::MaxManaUpdated);
+		CAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UCAttributeSet::GetMoveAccelerationAttribute()).AddUObject(this, &ACCharacter::MoveSpeedAccelerationUpdated);
 	}
 }
 
@@ -157,6 +159,11 @@ void ACCharacter::AimTagUpdated(const FGameplayTag DeadTag, int32 NewCount)
 	SetIsAiming(NewCount != 0);
 }
 
+void ACCharacter::FocusTagUpdated(const FGameplayTag FocusTag, int32 NewCount)
+{
+	bIsInFocusMode = NewCount > 0;
+}
+
 void ACCharacter::SetIsAiming(bool bIsAiming)
 {
 	bUseControllerRotationYaw = bIsAiming;
@@ -171,6 +178,11 @@ void ACCharacter::OnAimStateChanged(bool bIsAiming)
 void ACCharacter::MoveSpeedUpdated(const FOnAttributeChangeData& Data)
 {
 	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+}
+
+void ACCharacter::MoveSpeedAccelerationUpdated(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxAcceleration = Data.NewValue;
 }
 
 void ACCharacter::MaxHealthUpdated(const FOnAttributeChangeData& Data)
