@@ -84,6 +84,17 @@ void ATA_BlackHole::Tick(float DeltaTime)
     	}
 }
 
+void ATA_BlackHole::ConfirmTargetingAndContinue()
+{
+	StopBlackhole();
+}
+
+void ATA_BlackHole::CancelTargeting()
+{
+	StopBlackhole();
+	Super::CancelTargeting();
+}
+
 void ATA_BlackHole::TryAddTarget(AActor* OtherTarget)
 {
 	if (!OtherTarget || ActorsInRangeMap.Contains(OtherTarget))
@@ -125,6 +136,28 @@ void ATA_BlackHole::RemoveTarget(AActor* OtherTarget)
 
 void ATA_BlackHole::StopBlackhole()
 {
+	TArray<TWeakObjectPtr<AActor>> FinalTargets;
+	for (TPair<AActor*, UNiagaraComponent*>& TargetPair : ActorsInRangeMap)
+	{
+		FinalTargets.Add(TargetPair.Key);
+		UNiagaraComponent* NiagaraComponent = TargetPair.Value;
+		if (IsValid(NiagaraComponent))
+		{
+			NiagaraComponent->DestroyComponent();
+		}
+	}
+
+	FGameplayAbilityTargetDataHandle TargetDataHandle;
+
+	FGameplayAbilityTargetData_ActorArray* TargetActorArray = new FGameplayAbilityTargetData_ActorArray;
+	TargetActorArray->SetActors(FinalTargets);
+	TargetDataHandle.Add(TargetActorArray);
+
+	FGameplayAbilityTargetData_SingleTargetHit* BlowupLocation = new FGameplayAbilityTargetData_SingleTargetHit;
+	BlowupLocation->HitResult.ImpactPoint = GetActorLocation();
+	TargetDataHandle.Add(BlowupLocation);
+
+	TargetDataReadyDelegate.Broadcast(TargetDataHandle);
 }
 
 void ATA_BlackHole::OnRep_BlackholeRange()

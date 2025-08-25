@@ -32,6 +32,8 @@ protected:
 	void PushTarget(AActor* Target, const FVector& PushVel);
 	void PushTargets(const TArray<AActor*>& Targets, const FVector& PushVal);
 	void PushTargets(const FGameplayAbilityTargetDataHandle& TargetDataHandle, const FVector& PushVal);
+	void PushTargetsFromLocation(const FGameplayAbilityTargetDataHandle& TargetDataHandle, const FVector& FromLocation, float PushSpeed);
+	void PushTargetsFromLocation(const TArray<AActor*>& Targets, const FVector& FromLocation, float PushSpeed);
 	void PlayMontageLocally(UAnimMontage* MontageToPlay);
 	void StopMontageAfterCurrentSection(UAnimMontage* MontageToStop);
 	FGenericTeamId GetOwnerTeamId() const;
