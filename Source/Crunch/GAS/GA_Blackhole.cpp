@@ -6,6 +6,7 @@
 #include "TargetActor_GroundPick.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
+#include "TA_BlackHole.h"
 
 void UGA_BlackHole::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -48,10 +49,58 @@ void UGA_BlackHole::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 
 void UGA_BlackHole::PlaceBlackhole(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+	if (!K2_CommitAbility())
+	{
+		K2_EndAbility();
+		return;
+	}
+
+	RemoveAimEffect();
+
+	if (PlayCastBlackholeMontageTask)
+	{
+		PlayCastBlackholeMontageTask->OnBlendOut.RemoveAll(this);
+		PlayCastBlackholeMontageTask->OnCancelled.RemoveAll(this);
+		PlayCastBlackholeMontageTask->OnInterrupted.RemoveAll(this);
+		PlayCastBlackholeMontageTask->OnCompleted.RemoveAll(this);
+	}
+
+	if (HasAuthorityOrPredictionKey(CurrentActorInfo, &CurrentActivationInfo))
+	{
+		UAbilityTask_PlayMontageAndWait* PlayHoldBlackholeMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, HoldBlackholeMontage);
+		PlayHoldBlackholeMontage->OnBlendOut.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackholeMontage->OnCancelled.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackholeMontage->OnInterrupted.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackholeMontage->OnCompleted.AddDynamic(this, &UGA_BlackHole::K2_EndAbility);
+		PlayHoldBlackholeMontage->ReadyForActivation();
+	}
+
+	BlackholeTargetingTask = UAbilityTask_WaitTargetData::WaitTargetData(this, NAME_None, EGameplayTargetingConfirmation::UserConfirmed, BlackholeTargetActorClass);
+	BlackholeTargetingTask->ValidData.AddDynamic(this, &UGA_BlackHole::FinalTargetsReceived);
+	BlackholeTargetingTask->Cancelled.AddDynamic(this, &UGA_BlackHole::FinalTargetsReceived);
+	BlackholeTargetingTask->ReadyForActivation();
+
+	AGameplayAbilityTargetActor* TargetActor;
+	BlackholeTargetingTask->BeginSpawningActor(this, BlackholeTargetActorClass, TargetActor);
+	ATA_BlackHole* BlackholeTargetActor = Cast<ATA_BlackHole>(TargetActor);
+	if (BlackholeTargetActor)
+	{
+		BlackholeTargetActor->ConfigureBlackhole(TargetAreaRadius, BlackholePullSpeed,BlackholeDuration, GetOwnerTeamId());
+	}
+	BlackholeTargetingTask->FinishSpawningActor(this, TargetActor);
+	if (BlackholeTargetActor)
+	{
+		BlackholeTargetActor->SetActorLocation(UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, 1).ImpactPoint);
+	}
 }
 
 void UGA_BlackHole::PlacementCancelled(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
+}
+
+void UGA_BlackHole::FinalTargetsReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+{
+
 }
 
 void UGA_BlackHole::AddAimEffect()
