@@ -36,7 +36,12 @@ FGameplayTag UCAbilitySystemStatics::GetBasicAttackInputReleasedTag()
 
 FGameplayTag UCAbilitySystemStatics::GetAimStatTag()
 {
-	return FGameplayTag::RequestGameplayTag("Stats.Aim");;
+	return FGameplayTag::RequestGameplayTag("Stats.Aim");
+}
+
+FGameplayTag UCAbilitySystemStatics::GetFocusStatTag()
+{
+	return FGameplayTag::RequestGameplayTag("Stats.Focus");
 }
 
 FGameplayTag UCAbilitySystemStatics::GetCameraShakeGameplayCueTag()

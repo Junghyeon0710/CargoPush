@@ -3,10 +3,12 @@
 
 #include "GA_Blackhole.h"
 
+#include "AbilitySystemComponent.h"
 #include "TargetActor_GroundPick.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "TA_BlackHole.h"
+#include "UCAbilitySystemStatics.h"
 
 void UGA_BlackHole::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -44,6 +46,8 @@ void UGA_BlackHole::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 void UGA_BlackHole::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	RemoveAimEffect();
+	RemoveFocusEffect();
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -56,6 +60,7 @@ void UGA_BlackHole::PlaceBlackhole(const FGameplayAbilityTargetDataHandle& Targe
 	}
 
 	RemoveAimEffect();
+	AddFocusEffect();
 
 	if (PlayCastBlackholeMontageTask)
 	{
@@ -117,6 +122,13 @@ void UGA_BlackHole::FinalTargetsReceived(const FGameplayAbilityTargetDataHandle&
 	{
 		PlayMontageLocally(FinalBlowMontage);
 	}
+
+	FGameplayCueParameters FinalBlowCueParams;
+	FinalBlowCueParams.Location = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, 1).ImpactPoint;
+	FinalBlowCueParams.RawMagnitude = TargetAreaRadius;
+
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(FinalBlowCueTag, FinalBlowCueParams);
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(UCAbilitySystemStatics::GetCameraShakeGameplayCueTag(), FinalBlowCueParams);
 }
 
 void UGA_BlackHole::AddAimEffect()
@@ -129,5 +141,18 @@ void UGA_BlackHole::RemoveAimEffect()
 	if (AimEffectHandle.IsValid())
 	{
 		BP_RemoveGameplayEffectFromOwnerWithHandle(AimEffectHandle);
+	}
+}
+
+void UGA_BlackHole::AddFocusEffect()
+{
+	FocusEffectHandle = BP_ApplyGameplayEffectToOwner(FocusEffect);
+}
+
+void UGA_BlackHole::RemoveFocusEffect()
+{
+	if (FocusEffectHandle.IsValid())
+	{
+		BP_RemoveGameplayEffectFromOwnerWithHandle(FocusEffectHandle);
 	}
 }
