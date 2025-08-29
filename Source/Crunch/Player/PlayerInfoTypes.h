@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PlayerInfoTypes.generated.h"
 
+class UPA_CharacterDefination;
 /**
  * 
  */
@@ -21,6 +22,8 @@ public:
 	FORCEINLINE uint8 GetPlayerSlot() const { return Slot; }
 	FORCEINLINE FUniqueNetIdRepl GetPLayerUniqueId() const { return PlayerUniqueId; }
 	FORCEINLINE FString GetPlayerNickName() const { return PlayerNickName; }
+	FORCEINLINE const UPA_CharacterDefination* GetCharacterDefination() const { return CharacterDefination; }
+	FORCEINLINE void SetCharacterDefination(const UPA_CharacterDefination* InCharacterDefination) { CharacterDefination = InCharacterDefination; }
 
 	bool IsForPlayer(const APlayerState* PlayerState) const;
 	bool IsValid() const;
@@ -35,4 +38,7 @@ private:
 
 	UPROPERTY() 
 	FString PlayerNickName;
+
+	UPROPERTY()
+	const UPA_CharacterDefination* CharacterDefination;
 };

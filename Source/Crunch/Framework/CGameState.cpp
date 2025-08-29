@@ -3,6 +3,7 @@
 
 #include "CGameState.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 void ACGameState::RequestPlayerSelectionChange(const APlayerState* RequestingPlayer, uint8 DesiredSlot)
@@ -28,6 +29,23 @@ void ACGameState::RequestPlayerSelectionChange(const APlayerState* RequestingPla
 	OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
 }
 
+void ACGameState::SetCharacterSelected(const APlayerState* SelectingPlayer, const UPA_CharacterDefination* SelectedDefination)
+{
+	if (IsDefiniationSelected(SelectedDefination))
+		return;
+
+	FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate([&](const FPlayerSelection& PlayerSelection)
+	{
+		return PlayerSelection.IsForPlayer(SelectingPlayer);
+	});
+
+	if (FoundPlayerSelection)
+	{
+		FoundPlayerSelection->SetCharacterDefination(SelectedDefination);
+		OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+	}
+}
+
 bool ACGameState::IsSlotOccupied(uint8 SlotId) const
 {
 	for (const FPlayerSelection& PlayerSelection : PlayerSelectionArray)
@@ -39,6 +57,36 @@ bool ACGameState::IsSlotOccupied(uint8 SlotId) const
 	}
 
 	return false;
+}
+
+bool ACGameState::IsDefiniationSelected(const UPA_CharacterDefination* Defination) const
+{
+	const FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate([&](const FPlayerSelection& PlayerSelection)
+		{
+			return PlayerSelection.GetCharacterDefination() == Defination;
+		}
+	);
+
+	return FoundPlayerSelection != nullptr;
+}
+
+void ACGameState::SetCharacterDeSelected(const UPA_CharacterDefination* DefinationToDeSelect)
+{
+	if (!DefinationToDeSelect)
+	{
+		return;
+	}
+	
+	FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate([&](const FPlayerSelection& PlayerSelection)
+	{
+		return PlayerSelection.GetCharacterDefination() == DefinationToDeSelect;
+	});
+
+	if (FoundPlayerSelection)
+	{
+		FoundPlayerSelection->SetCharacterDefination(nullptr);
+		OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+	}
 }
 
 void ACGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

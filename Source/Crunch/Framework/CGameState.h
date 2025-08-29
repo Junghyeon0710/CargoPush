@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Crunch/Character/PA_CharacterDefination.h"
 #include "Crunch/Player/PlayerInfoTypes.h"
 #include "GameFramework/GameStateBase.h"
 #include "CGameState.generated.h"
 
+class UPA_CharacterDefination;
 /**
  * 
  */
@@ -20,7 +22,10 @@ class ACGameState : public AGameStateBase
 	GENERATED_BODY()
 public:
 	void RequestPlayerSelectionChange(const APlayerState* RequestingPlayer, uint8 DesiredSlot);
+	void SetCharacterSelected(const APlayerState* SelectingPlayer, const UPA_CharacterDefination* SelectedDefination);
 	bool IsSlotOccupied(uint8 SlotId) const;
+	bool IsDefiniationSelected(const UPA_CharacterDefination* Defination) const;
+	void SetCharacterDeSelected(const UPA_CharacterDefination* DefinationToDeSelect);
 
 	FOnPlayerSelectionUpdated OnPlayerSelectionUpdated;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > &OutLifetimeProps) const override;
