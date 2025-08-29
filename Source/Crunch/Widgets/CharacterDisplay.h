@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CharacterDisplay.generated.h"
+class UPA_CharacterDefination;
 
 UCLASS()
 class CRUNCH_API ACharacterDisplay : public AActor
@@ -13,7 +14,7 @@ class CRUNCH_API ACharacterDisplay : public AActor
 	
 public:	
 	ACharacterDisplay();
-	void ConfigureWithCharacterDefination(class UPA_CharacterDefination* CharacterDefination);
+	void ConfigureWithCharacterDefination(const UPA_CharacterDefination* CharacterDefination);
 	
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Character Display")

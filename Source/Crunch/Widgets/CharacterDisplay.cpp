@@ -21,7 +21,7 @@ ACharacterDisplay::ACharacterDisplay()
 
 }
 
-void ACharacterDisplay::ConfigureWithCharacterDefination(class UPA_CharacterDefination* CharacterDefination)
+void ACharacterDisplay::ConfigureWithCharacterDefination(const UPA_CharacterDefination* CharacterDefination)
 {
 	if (!CharacterDefination)
 		return;
