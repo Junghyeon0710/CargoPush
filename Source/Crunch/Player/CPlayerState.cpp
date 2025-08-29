@@ -10,14 +10,24 @@
 ACPlayerState::ACPlayerState()
 {
 	bReplicates = true;
-	NetUpdateFrequency = 100.0f;
+	NetUpdateFrequency = 100.f;
 }
 
 void ACPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
 	DOREPLIFETIME(ACPlayerState, PlayerSelection);
+}
+
+void ACPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+	CGameState = Cast<ACGameState>(UGameplayStatics::GetGameState(this));
+
+	if (CGameState)
+	{
+		CGameState->OnPlayerSelectionUpdated.AddUObject(this, &ACPlayerState::PlayerSelectionUpdated);
+	}
 }
 
 void ACPlayerState::Server_SetSelectedCharacterDefination_Implementation(const UPA_CharacterDefination* NewDefination)
@@ -33,7 +43,7 @@ void ACPlayerState::Server_SetSelectedCharacterDefination_Implementation(const U
 
 	if (PlayerSelection.GetCharacterDefination())
 	{
-		CGameState->SetCharacterDeSelected(PlayerSelection.GetCharacterDefination());
+		CGameState->SetCharacterDeselected(PlayerSelection.GetCharacterDefination());
 	}
 
 	PlayerSelection.SetCharacterDefination(NewDefination);
@@ -43,18 +53,6 @@ void ACPlayerState::Server_SetSelectedCharacterDefination_Implementation(const U
 bool ACPlayerState::Server_SetSelectedCharacterDefination_Validate(const UPA_CharacterDefination* NewDefination)
 {
 	return true;
-}
-
-void ACPlayerState::BeginPlay()
-{
-	Super::BeginPlay();
-
-	CGameState = Cast<ACGameState>(UGameplayStatics::GetGameState(this));
-
-	if (CGameState)
-	{
-		CGameState->OnPlayerSelectionUpdated.AddUObject(this, &ThisClass::PlayerSelectionUpdated);
-	}
 }
 
 void ACPlayerState::PlayerSelectionUpdated(const TArray<FPlayerSelection>& NewPlayerSelections)

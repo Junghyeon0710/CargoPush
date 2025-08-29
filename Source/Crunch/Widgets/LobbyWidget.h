@@ -47,6 +47,9 @@ private:
 	UPROPERTY()
 	class ALobbyPlayerController* LobbyPlayerController;
 
+	UPROPERTY()
+	class ACPlayerState* CPlayerState;
+	
 	void ConfigureGameState();
 	FTimerHandle ConfigureGameStateTimerHandle;
 
@@ -60,4 +63,8 @@ private:
 
 	void SwitchToHeroSelection();
 	void CharacterDefinitionLoaded();
+
+	void CharacterSelected(UObject* SelectedUObject);
+
+	
 };

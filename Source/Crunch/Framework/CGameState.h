@@ -9,9 +9,7 @@
 #include "CGameState.generated.h"
 
 class UPA_CharacterDefination;
-/**
- * 
- */
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerSelectionUpdated, const TArray<FPlayerSelection>& /*NewPlayerSelection*/);
 /**
  * 
@@ -24,13 +22,14 @@ public:
 	void RequestPlayerSelectionChange(const APlayerState* RequestingPlayer, uint8 DesiredSlot);
 	void SetCharacterSelected(const APlayerState* SelectingPlayer, const UPA_CharacterDefination* SelectedDefination);
 	bool IsSlotOccupied(uint8 SlotId) const;
-	bool IsDefiniationSelected(const UPA_CharacterDefination* Defination) const;
-	void SetCharacterDeSelected(const UPA_CharacterDefination* DefinationToDeSelect);
+	bool IsDefiniationSelected(const UPA_CharacterDefination* Definiation) const;
+	void SetCharacterDeselected(const UPA_CharacterDefination* DefiniationToDeselect);
 
 	FOnPlayerSelectionUpdated OnPlayerSelectionUpdated;
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > &OutLifetimeProps) const override;
 	const TArray<FPlayerSelection>& GetPlayerSelection() const;
 	bool CanStartHeroSelection() const;
+	bool CanStartMatch() const;
 private:	
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerSelectionArray)
 	TArray<FPlayerSelection> PlayerSelectionArray;

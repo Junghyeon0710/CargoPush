@@ -6,10 +6,10 @@
 #include "PlayerInfoTypes.generated.h"
 
 class UPA_CharacterDefination;
-/**
- * 
- */
 class APlayerState;
+
+class APlayerState;
+class UPA_CharacterDefination;
 USTRUCT()
 struct FPlayerSelection
 {
@@ -23,7 +23,7 @@ public:
 	FORCEINLINE FUniqueNetIdRepl GetPLayerUniqueId() const { return PlayerUniqueId; }
 	FORCEINLINE FString GetPlayerNickName() const { return PlayerNickName; }
 	FORCEINLINE const UPA_CharacterDefination* GetCharacterDefination() const { return CharacterDefination; }
-	FORCEINLINE void SetCharacterDefination(const UPA_CharacterDefination* InCharacterDefination) { CharacterDefination = InCharacterDefination; }
+	FORCEINLINE void SetCharacterDefination(const UPA_CharacterDefination* NewCharacterDefination) { CharacterDefination = NewCharacterDefination; }
 
 	bool IsForPlayer(const APlayerState* PlayerState) const;
 	bool IsValid() const;
