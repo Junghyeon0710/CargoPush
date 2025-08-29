@@ -7,6 +7,7 @@
 #include "Engine/AssetManager.h"
 #include "CAssetManager.generated.h"
 
+class UPA_CharacterDefination;
 class UPA_ShopItem;
 /**
  * 
@@ -17,6 +18,9 @@ class CRUNCH_API UCAssetManager : public UAssetManager
 	GENERATED_BODY()
 public:
 	static UCAssetManager& Get();
+	void LoadCharacterDefinations(const FStreamableDelegate& LoadFinishedCallback);
+	bool GetLoadedCharacterDefinations(TArray<UPA_CharacterDefination*>& OutCharacterDefinations) const;
+	
 	void LoadShopItems(const FStreamableDelegate& LoadFinishedCallback);
 	bool GetLoadedShopItems(TArray<const UPA_ShopItem*>& OutItems) const;
 	const FItemCollection* GetCombinationForItem(const UPA_ShopItem* Item) const;

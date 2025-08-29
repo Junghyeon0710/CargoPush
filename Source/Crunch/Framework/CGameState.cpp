@@ -3,6 +3,7 @@
 
 #include "CGameState.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 void ACGameState::RequestPlayerSelectionChange(const APlayerState* RequestingPlayer, uint8 DesiredSlot)
@@ -25,7 +26,26 @@ void ACGameState::RequestPlayerSelectionChange(const APlayerState* RequestingPla
 		PlayerSelectionArray.Add(FPlayerSelection(DesiredSlot, RequestingPlayer));
 	}
 
-	OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+	//OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+}
+
+void ACGameState::SetCharacterSelected(const APlayerState* SelectingPlayer, const UPA_CharacterDefination* SelectedDefination)
+{
+	if (IsDefiniationSelected(SelectedDefination))
+		return;
+
+	FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& PlayerSelection)
+		{
+			return PlayerSelection.IsForPlayer(SelectingPlayer);
+		}
+	);
+
+	if (FoundPlayerSelection)
+	{
+		FoundPlayerSelection->SetCharacterDefination(SelectedDefination);
+		OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+	}
 }
 
 bool ACGameState::IsSlotOccupied(uint8 SlotId) const
@@ -41,6 +61,37 @@ bool ACGameState::IsSlotOccupied(uint8 SlotId) const
 	return false;
 }
 
+bool ACGameState::IsDefiniationSelected(const UPA_CharacterDefination* Definiation) const
+{
+	const FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& PlayerSelection)
+		{
+			return PlayerSelection.GetCharacterDefination() == Definiation;
+		}
+	);
+
+	return FoundPlayerSelection != nullptr;
+}
+
+void ACGameState::SetCharacterDeselected(const UPA_CharacterDefination* DefiniationToDeselect)
+{
+	if (!DefiniationToDeselect)
+		return;
+
+	FPlayerSelection* FoundPlayerSelection = PlayerSelectionArray.FindByPredicate(
+		[&](const FPlayerSelection& PlayerSelection)
+		{
+			return PlayerSelection.GetCharacterDefination() == DefiniationToDeselect;
+		}
+	);
+
+	if (FoundPlayerSelection)
+	{
+		FoundPlayerSelection->SetCharacterDefination(nullptr);
+		OnPlayerSelectionUpdated.Broadcast(PlayerSelectionArray);
+	}
+}
+
 void ACGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -51,6 +102,24 @@ const TArray<FPlayerSelection>& ACGameState::GetPlayerSelection() const
 {
 	return PlayerSelectionArray;
 }
+
+bool ACGameState::CanStartHeroSelection() const
+{
+	return PlayerSelectionArray.Num() == PlayerArray.Num();
+}
+
+// bool ACGameState::CanStartMatch() const
+// {
+// 	for (const FPlayerSelection& PlayerSelection : PlayerSelectionArray)
+// 	{
+// 		if (PlayerSelection.GetCharacterDefination() == nullptr)
+// 		{
+// 			return false;
+// 		}
+// 	}
+//
+// 	return true;
+// }
 
 void ACGameState::OnRep_PlayerSelectionArray()
 {
