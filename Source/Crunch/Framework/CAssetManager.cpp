@@ -3,6 +3,7 @@
 
 #include "CAssetManager.h"
 
+#include "Crunch/Character/PA_CharacterDefination.h"
 #include "Crunch/Inventory/PA_ShopItem.h"
 
 UCAssetManager& UCAssetManager::Get()
@@ -16,6 +17,27 @@ UCAssetManager& UCAssetManager::Get()
 	UE_LOG(LogLoad, Fatal, TEXT("Asset Manager Needs to be of the type CASssetManager"));
 
 	return *NewObject<UCAssetManager>();
+}
+
+void UCAssetManager::LoadCharacterDefinations(const FStreamableDelegate& LoadFinishedCallback)
+{
+	LoadPrimaryAssetsWithType(UPA_CharacterDefination::GetCharacterDefinationAssetType(), TArray<FName>(), LoadFinishedCallback);
+}
+
+bool UCAssetManager::GetLoadedCharacterDefinations(TArray<UPA_CharacterDefination*>& OutCharacterDefinations) const
+{
+	TArray<UObject*> LoadedObject;
+	bool bLoaded = GetPrimaryAssetObjectList(UPA_CharacterDefination::GetCharacterDefinationAssetType(), LoadedObject);
+	if (bLoaded)
+	{
+		for (UObject* Object : LoadedObject)
+		{
+			OutCharacterDefinations.Add(Cast<UPA_CharacterDefination>(Object));
+		}
+	}
+
+	return bLoaded;
+	
 }
 
 void UCAssetManager::LoadShopItems(const FStreamableDelegate& LoadFinishedCallback)

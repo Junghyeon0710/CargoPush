@@ -49,13 +49,13 @@ TSubclassOf<UAnimInstance> UPA_CharacterDefination::GetDisplayAnimBP() const
 
 class USkeletalMesh* UPA_CharacterDefination::LoadDisplayMesh() const
 {
-	TSubclassOf<ACCharacter> CharacterClass = LoadCharacterClass();
-	if (!CharacterClass)
+	TSubclassOf<ACCharacter> LoadCharacter = LoadCharacterClass();
+	if (!LoadCharacter)
 	{
 		return nullptr;
 	}
 
-	ACharacter* Character = Cast<ACharacter>(CharacterClass.GetDefaultObject());
+	ACharacter* Character = Cast<ACharacter>(LoadCharacter.GetDefaultObject());
 	if (!Character)
 	{
 		return nullptr;
