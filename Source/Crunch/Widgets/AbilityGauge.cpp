@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilityToolTip.h"
 #include "Abilities/GameplayAbility.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -58,6 +59,23 @@ void UAbilityGauge::ConfigureWithWidgetData(const FAbilityWidgetData* WidgetData
 	if (Icon && WidgetData)
 	{
 		Icon->GetDynamicMaterial()->SetTextureParameterValue(IconMaterialParamName, WidgetData->Icon.LoadSynchronous());
+		CreateToolTipWidget(WidgetData);
+	}
+}
+
+void UAbilityGauge::CreateToolTipWidget(const FAbilityWidgetData* WidgetData)
+{
+	if (!WidgetData || !AbilityToolTipClass)
+		return;
+
+	UAbilityToolTip* ToolTip = CreateWidget<UAbilityToolTip>(GetOwningPlayer(), AbilityToolTipClass);
+	if (ToolTip)
+	{
+		float CooldownDuration = UCAbilitySystemStatics::GetStaticCooldownDurationForAbility(AbilityCDO);
+		float Cost = UCAbilitySystemStatics::GetStaticCostForAbility(AbilityCDO);
+		ToolTip->SetAbilityInfo(WidgetData->AbilityName, WidgetData->Icon.LoadSynchronous(), WidgetData->Description, CooldownDuration, Cost);
+
+		SetToolTip(ToolTip);
 	}
 }
 
