@@ -6,9 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerTeamSlotWidget.generated.h"
 
-/**
- * 
- */
+class UPA_CharacterDefination;
+
 UCLASS()
 class CRUNCH_API UPlayerTeamSlotWidget : public UUserWidget
 {
