@@ -46,6 +46,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UAbilityListView* AbilityListView;
+
+	UPROPERTY(meta=(BindWidget))	
+	class UPlayerTeamLayoutWidget* PlayerTeamLayoutWidget;
 	
 	UPROPERTY()
 	class ALobbyPlayerController* LobbyPlayerController;
