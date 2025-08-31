@@ -7,9 +7,8 @@
 #include "Crunch/Player/PlayerInfoTypes.h"
 #include "PlayerTeamLayoutWidget.generated.h"
 
-/**
- * 
- */
+class UPlayerTeamSlotWidget;
+
 UCLASS()
 class CRUNCH_API UPlayerTeamLayoutWidget : public UUserWidget
 {
