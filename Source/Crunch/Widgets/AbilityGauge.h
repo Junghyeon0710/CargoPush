@@ -60,6 +60,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Visual")
 	FName UpgradePointAvailableParamName = "UpgradeAvailable";
 
+	UPROPERTY(EditDefaultsOnly, Category = "Tool Tip")
+	TSubclassOf<class UAbilityToolTip> AbilityToolTipClass;
+
+	void CreateToolTipWidget(const FAbilityWidgetData* WidgetData);
+	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
 	float CooldownUpdateInterval = 0.1f;
 	

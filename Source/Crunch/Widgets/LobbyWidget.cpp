@@ -3,8 +3,10 @@
 
 #include "LobbyWidget.h"
 
+#include "AbilityListView.h"
 #include "CharacterDisplay.h"
 #include "CharacterEntryWidget.h"
+#include "PlayerTeamLayoutWidget.h"
 #include "TeamsSelectionWidget.h"
 #include "Chaos/CollisionResolutionUtil.h"
 #include "Components/Button.h"
@@ -135,6 +137,11 @@ void ULobbyWidget::UpdatePlayerSelectionDisplay(const TArray<FPlayerSelection>& 
 	{
 		StartHeroSelectionButton->SetIsEnabled(CGameState->CanStartHeroSelection());
 	}
+
+	if (PlayerTeamLayoutWidget)
+	{
+		PlayerTeamLayoutWidget->UpdatePlayerSelection(PlayerSelections);
+	}
 }
 
 void ULobbyWidget::StartHeroSelectionButtonClicked()
@@ -206,4 +213,10 @@ void ULobbyWidget::UpdateCharacterDisplay(const FPlayerSelection& PlayerSelectio
 		return;
 
 	CharacterDisplay->ConfigureWithCharacterDefination(PlayerSelection.GetCharacterDefination());
+	AbilityListView->ClearListItems();
+	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>* Abilities = PlayerSelection.GetCharacterDefination()->GetAbilities();
+	if (Abilities)
+	{
+		AbilityListView->ConfigureAbilities(*Abilities);
+	}
 }

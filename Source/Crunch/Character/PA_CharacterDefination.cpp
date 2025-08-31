@@ -47,6 +47,23 @@ TSubclassOf<UAnimInstance> UPA_CharacterDefination::GetDisplayAnimBP() const
 	return nullptr;
 }
 
+const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>* UPA_CharacterDefination::GetAbilities() const
+{
+	TSubclassOf<ACCharacter> LoadCharacter = LoadCharacterClass();
+	if (!LoadCharacter)
+	{
+		return nullptr;
+	}
+	
+	ACCharacter* Character = Cast<ACCharacter>(LoadCharacter.GetDefaultObject());
+	if (!Character)
+	{
+		return nullptr;
+	}
+
+	return &Character->GetAbilities();
+}
+
 class USkeletalMesh* UPA_CharacterDefination::LoadDisplayMesh() const
 {
 	TSubclassOf<ACCharacter> LoadCharacter = LoadCharacterClass();

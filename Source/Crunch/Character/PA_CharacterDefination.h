@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Crunch/GAS/CGameAbilityTypes.h"
 #include "Engine/DataAsset.h"
 #include "PA_CharacterDefination.generated.h"
 
 class ACCharacter;
+class UGameplayAbility;
 /**
  * 
  */
@@ -24,6 +26,7 @@ public:
 	TSubclassOf<ACCharacter> LoadCharacterClass() const;
 	TSubclassOf<UAnimInstance> GetDisplayAnimBP() const;
 	class USkeletalMesh* LoadDisplayMesh() const;
+	const TMap<ECAbilityInputID, TSubclassOf<UGameplayAbility>>* GetAbilities() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
