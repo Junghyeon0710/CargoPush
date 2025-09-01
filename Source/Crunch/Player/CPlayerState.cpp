@@ -6,6 +6,8 @@
 #include "Crunch/Framework/CGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Crunch/Character/CCharacter.h"
+#include "Crunch/Network/CNetStatics.h"
 
 ACPlayerState::ACPlayerState()
 {
@@ -17,6 +19,32 @@ void ACPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACPlayerState, PlayerSelection);
+}
+
+void ACPlayerState::CopyProperties(APlayerState* PlayerState)
+{
+	Super::CopyProperties(PlayerState);
+
+	ACPlayerState* NewPlayerState = Cast<ACPlayerState>(PlayerState);
+	if (NewPlayerState)
+	{
+		NewPlayerState->PlayerSelection = PlayerSelection;
+	}
+}
+
+TSubclassOf<APawn> ACPlayerState::GetSelectedPawnClass() const
+{
+	if (PlayerSelection.GetCharacterDefination())
+	{
+		return PlayerSelection.GetCharacterDefination()->LoadCharacterClass();
+	}
+
+	return nullptr;
+}
+
+FGenericTeamId ACPlayerState::GetTeamIdBasedOnSlot() const
+{
+	return PlayerSelection.GetPlayerSlot() < UCNetStatics::GetPlayerCountPerTeam() ? FGenericTeamId(0) : FGenericTeamId(1);
 }
 
 void ACPlayerState::BeginPlay()
