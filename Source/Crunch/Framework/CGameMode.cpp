@@ -6,6 +6,7 @@
 #include "EngineUtils.h"
 #include "StormCore.h"
 #include "Crunch/Player/CPlayerController.h"
+#include "Crunch/Player/CPlayerState.h"
 #include "GameFramework/PlayerStart.h"
 
 class ACPlayerController;
@@ -36,8 +37,40 @@ void ACGameMode::StartPlay()
 	}
 }
 
-FGenericTeamId ACGameMode::GetTeamIDForPlayer(const APlayerController* PlayerController) const
+UClass* ACGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
+	ACPlayerState* PlayerState = InController->GetPlayerState<ACPlayerState>();
+	if (PlayerState && PlayerState->GetSelectedPawnClass())
+	{
+		return PlayerState->GetSelectedPawnClass();
+	}
+
+	return BackupPawn;
+}
+
+APawn* ACGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
+{
+	IGenericTeamAgentInterface* NewPlayerTeamInterface = Cast<IGenericTeamAgentInterface>(NewPlayer);
+	FGenericTeamId TeamId = GetTeamIDForPlayer(NewPlayer);
+	if (NewPlayerTeamInterface)
+	{
+		NewPlayerTeamInterface->SetGenericTeamId(TeamId);
+	}
+
+	StartSpot = FindNextStartSpotForTeam(TeamId);
+	NewPlayer->StartSpot = StartSpot;
+	
+	return Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
+}
+
+FGenericTeamId ACGameMode::GetTeamIDForPlayer(const AController* InController) const
+{
+	ACPlayerState* PlayerState = InController->GetPlayerState<ACPlayerState>();
+	if (PlayerState && PlayerState->GetSelectedPawnClass())
+	{
+		return PlayerState->GetTeamIdBasedOnSlot();
+	}
+	
 	static int PlayerCount = 0;
 	++PlayerCount;
 	

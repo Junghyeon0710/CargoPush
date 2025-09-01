@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "PlayerInfoTypes.h"
 #include "GameFramework/PlayerState.h"
 #include "CPlayerState.generated.h"
@@ -18,6 +19,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SetSelectedCharacterDefination(const UPA_CharacterDefination* NewDefination);
+	virtual void CopyProperties(APlayerState* PlayerState) override;
+	TSubclassOf<APawn> GetSelectedPawnClass() const;
+	FGenericTeamId GetTeamIdBasedOnSlot() const;
 protected:
 	virtual void BeginPlay() override;
 private:
