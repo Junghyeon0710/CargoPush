@@ -3,11 +3,11 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class CrunchTarget : TargetRules
+public class CrunchServerTarget : TargetRules
 {
-	public CrunchTarget(TargetInfo Target) : base(Target)
+	public CrunchServerTarget( TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.Add("Crunch");
