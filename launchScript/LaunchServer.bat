@@ -1,5 +1,5 @@
 "D:\Epic Games\UE_5.6\Engine\Binaries\Win64\UnrealEditor.exe" ^
-  "D:\Unreal Projects\Crunch\Crunch.uproject" ^
+ "D:\Unreal Projects\Crunch\Crunch.uproject" ^
   -server ^
   -log ^
   -epicapp="ServerClient" ^
