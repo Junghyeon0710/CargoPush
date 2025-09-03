@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "MainMenuWidget.generated.h"
 
 /**
@@ -28,8 +29,13 @@ private:
 	UPROPERTY()
 	class UCGameInstance* CGameInstance;
 
+	void SwitchToMainWidget();
+
+	UPROPERTY(meta=(BindWidget))
+	class UWidget* MainWidgetRoot;
+
 	/******************************/	
-	/*           Main             */
+	/*           Login             */
 	/******************************/	
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -42,4 +48,12 @@ private:
 	void LoginBtnClicked();
 
 	void LoginCompleted(bool bWasSuccessful, const FString& PlayerNickname, const FString& ErrorMsg);
+
+	/******************************/	
+	/*           Waiting          */
+	/******************************/	
+private:
+	UPROPERTY(meta=(BindWidget))
+	class UWaitingWidget* WaitingWidget;
+	FOnButtonClickedEvent& SwitchToWaitingWidget(const FText& WaitInfo, bool bAllowCancel = false);
 };
