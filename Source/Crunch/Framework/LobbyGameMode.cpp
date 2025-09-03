@@ -3,7 +3,10 @@
 
 #include "LobbyGameMode.h"
 
+#include "Crunch/Network/CGameSession.h"
+
 ALobbyGameMode::ALobbyGameMode()
 {
 	bUseSeamlessTravel = true;
+	GameSessionClass = ACGameSession::StaticClass();
 }

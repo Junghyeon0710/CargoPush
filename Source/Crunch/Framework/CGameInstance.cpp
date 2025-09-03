@@ -26,6 +26,26 @@ void UCGameInstance::Init()
 	}
 }
 
+void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
+{
+	if (WaitPlayerJoinTimeoutHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(WaitPlayerJoinTimeoutHandle);
+	}
+
+	PlayerRecord.Add(UniqueId);
+}
+
+void UCGameInstance::PlayerLeft(const FUniqueNetIdRepl& UniqueId)
+{
+	PlayerRecord.Remove(UniqueId);
+	if (PlayerRecord.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("All player left the session, terminating"))
+		TerminateSessionServer();
+	}
+}
+
 void UCGameInstance::CreateSession()
 {
 	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
@@ -42,9 +62,14 @@ void UCGameInstance::CreateSession()
 		{
 			UE_LOG(LogTemp, Error, TEXT("Failed to create session"));
 			SessionPtr->OnCreateSessionCompleteDelegates.RemoveAll(this);
-			TerminateSessionSever();
+			TerminateSessionServer();
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Session Name: %s, ID: %s, Port: %d"), *ServerSessionName, *SessionSearchId, SessionServerPort);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't find sesison ptr, terminating"))
+		TerminateSessionServer();
 	}
 }
 
@@ -59,7 +84,7 @@ void UCGameInstance::OnSessionCreated(FName SessionName, bool bWasSuccessful)
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("------------ Session Creation Failed"))
-		TerminateSessionSever();
+		TerminateSessionServer();
 	}
 
 	if (IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr())
@@ -73,7 +98,7 @@ void UCGameInstance::EndSessisonCompleted(FName SessionName, bool bWasSuccessful
 	FGenericPlatformMisc::RequestExit(false);
 }
 
-void UCGameInstance::TerminateSessionSever()
+void UCGameInstance::TerminateSessionServer()
 {
 	if (IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr())
 	{
@@ -93,7 +118,7 @@ void UCGameInstance::TerminateSessionSever()
 void UCGameInstance::WaitPlayerJoinTimeoutReached()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Session Sever shut down aftert %f seconds without player joining"), WaitPlayerJoinTimeOutDuration)
-	TerminateSessionSever();
+	TerminateSessionServer();
 }
 
 void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
