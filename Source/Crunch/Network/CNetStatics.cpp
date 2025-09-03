@@ -41,8 +41,8 @@ FOnlineSessionSettings UCNetStatics::GenerateOnlineSessionSettings(const FName& 
 	OnlineSessionSettings.bUseLobbiesVoiceChatIfAvailable = false;
 	OnlineSessionSettings.bUsesStats = true;
 
-	OnlineSessionSettings.Set(GetSessionNameKey(), *SessionName.ToString(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	OnlineSessionSettings.Set(GetSessionSearchIdKey(), *SessionSearchId.ToString(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	OnlineSessionSettings.Set<FString>(GetSessionNameKey(), SessionName.ToString(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	OnlineSessionSettings.Set<FString>(GetSessionSearchIdKey(), SessionSearchId, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	OnlineSessionSettings.Set(GetPortKey(), Port, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	
 	return OnlineSessionSettings;

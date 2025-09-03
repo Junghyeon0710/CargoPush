@@ -22,8 +22,19 @@ public:
 	/********************************/
 
 	void CreateSession();
+	void OnSessionCreated(FName SessionName, bool bWasSuccessful);
+	void EndSessisonCompleted(FName SessionName, bool bWasSuccessful);
 	FString ServerSessionName;
 	int SessionServerPort;
+
+	void TerminateSessionSever();
+
+	FTimerHandle WaitPlayerJoinTimeoutHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	float WaitPlayerJoinTimeOutDuration = 60.f;
+
+	void WaitPlayerJoinTimeoutReached();
 	
 private:	
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
