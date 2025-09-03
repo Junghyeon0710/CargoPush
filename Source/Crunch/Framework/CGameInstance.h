@@ -15,7 +15,16 @@ class CRUNCH_API UCGameInstance : public UGameInstance
 	GENERATED_BODY()
 public:
 	void StartMatch();
+	virtual void Init() override;
 
+	/********************************/
+	/*          Session Server      */
+	/********************************/
+
+	void CreateSession();
+	FString ServerSessionName;
+	int SessionServerPort;
+	
 private:	
 	UPROPERTY(EditDefaultsOnly, Category = "Map")
 	TSoftObjectPtr<UWorld> MainMenuLevel;

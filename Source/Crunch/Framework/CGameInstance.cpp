@@ -3,12 +3,35 @@
 
 #include "CGameInstance.h"
 
+#include "Crunch/Network/CNetStatics.h"
+
 void UCGameInstance::StartMatch()
 {
 	if (GetWorld()->GetNetMode() == ENetMode::NM_DedicatedServer || GetWorld()->GetNetMode() == ENetMode::NM_ListenServer)
 	{
 		LoadLevelAndListen(GameLevel);
 	}
+}
+
+void UCGameInstance::Init()
+{
+	Super::Init();
+	if (GetWorld()->IsEditorWorld())
+		return;
+	
+	if (UCNetStatics::IsSessionServer(this))
+	{
+		CreateSession();
+	}
+}
+
+void UCGameInstance::CreateSession()
+{
+	ServerSessionName = UCNetStatics::GetSessionNameStr();
+	FString SessionSearchId = UCNetStatics::GetSesisonSearchIdStr();
+	SessionServerPort = UCNetStatics::GetSessionPort();
+
+	UE_LOG(LogTemp, Warning, TEXT("Session Name: %s, ID: %s, Port: %d"), *ServerSessionName, *SessionSearchId, SessionServerPort);
 }
 
 void UCGameInstance::LoadLevelAndListen(TSoftObjectPtr<UWorld> Level)
