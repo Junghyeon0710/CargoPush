@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interfaces/OnlineIdentityInterface.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CNetStatics.generated.h"
 
@@ -14,6 +16,10 @@ class CRUNCH_API UCNetStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
+	static IOnlineSessionPtr GetSessionPtr();
+	static IOnlineIdentityPtr GetIdentityPtr();
+	static FOnlineSessionSettings GenerateOnlineSessionSettings(const FName& SessionName, const FString& SessionSearchId, int32 Port);
+	
 	static uint8 GetPlayerCountPerTeam();
 
 	static bool IsSessionServer(const UObject* WorldContextObject);
