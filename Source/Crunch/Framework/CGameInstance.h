@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Interfaces/IHttpResponse.h"
+#include "Interfaces/IHttpRequest.h"
 #include "CGameInstance.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
+
 UCLASS()
 class CRUNCH_API UCGameInstance : public UGameInstance
 {
@@ -16,6 +17,30 @@ class CRUNCH_API UCGameInstance : public UGameInstance
 public:
 	void StartMatch();
 	virtual void Init() override;
+
+	/*************************************/
+	/*             Login                 */
+	/*************************************/
+public:
+	bool IsLoggedIn() const;
+	bool IsLoggingIn() const;
+	void ClientAccountPortalLogin();
+	FOnLoginCompleted OnLoginCompleted;
+private:
+	void ClientLogin(const FString& Type, const FString& Id, const FString& Token);
+	void LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
+
+	FDelegateHandle LoggingInDelegateHandle;
+
+	/*************************************/
+	/* Client Session Creation and Search */
+	/*************************************/
+public:
+	void RequestCreateAndJoinSession(const FName& NewSessionName);
+	void CancelSessionCreation();
+	
+private:
+	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SesisonSearchId);
 
 	/********************************/
 	/*          Session Server      */
