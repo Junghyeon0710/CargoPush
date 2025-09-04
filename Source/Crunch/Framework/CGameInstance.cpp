@@ -293,7 +293,53 @@ void UCGameInstance::JoinSessionWithSearchResult(const FOnlineSessionSearchResul
 	int64 Port = 7777;
 	PortSetting->Data.GetValue(Port);
 
-	UE_LOG(LogTemp, Warning, TEXT("Joining session with name: %s, on port: %d"), *SessionName, Port)
+	UE_LOG(LogTemp, Warning, TEXT("Joining session with name: %s, on port: %d"), *SessionName, Port);
+	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+	SessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &UCGameInstance::JoinSessionCompleted, (int)Port);
+	if (!SessionPtr->JoinSession(0, FName(SessionName), SearchResult))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Join Session Failed Right Away!..."))
+		SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
+		OnJoinSessionFailed.Broadcast();
+	}
+}
+
+void UCGameInstance::JoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type JoinResult, int Port)
+{
+	IOnlineSessionPtr SessionPtr = UCNetStatics::GetSessionPtr();
+	if (!SessionPtr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Join Session Completed, but can't find session pointer"))
+		OnJoinSessionFailed.Broadcast();
+		return;
+	}
+
+	if (JoinResult == EOnJoinSessionCompleteResult::Success)
+	{
+		StopAllSessionFindings();
+		UE_LOG(LogTemp, Warning, TEXT("Joining Sesison: %s successful, the port is: %d"), *(SessionName.ToString()), Port)
+
+		FString TravelURL = "";
+		SessionPtr->GetResolvedConnectString(SessionName, TravelURL);
+		
+		FString TestingURL = UCNetStatics::GetTestingURL();
+		if (!TestingURL.IsEmpty())
+		{
+			TravelURL = TestingURL;
+		}
+
+		UCNetStatics::ReplacePort(TravelURL, Port);
+
+		UE_LOG(LogTemp, Warning, TEXT("Traveling to Session at: %s"), *TravelURL)
+
+		GetFirstLocalPlayerController(GetWorld())->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
+	}
+	else
+	{
+		OnJoinSessionFailed.Broadcast();
+	}
+
+	SessionPtr->OnJoinSessionCompleteDelegates.RemoveAll(this);
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)

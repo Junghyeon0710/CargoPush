@@ -39,5 +39,10 @@ public:
 	
 	static FString GetCommandlineArgAsString(const FName& ParamName);
 	static int GetCommandlineArgAsInt(const FName& ParamName);
+
+	static FString GetTestingURL();
+	static FName GetTestingURLKey();
+
+	static void ReplacePort(FString& OutURLStr, int NewPort);
 	
 };

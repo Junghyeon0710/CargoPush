@@ -6,9 +6,11 @@
 #include "Engine/GameInstance.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Interfaces/IHttpRequest.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "CGameInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLoginCompleted, bool /*bWasSuccessful*/, const FString& /*PlayerNickName*/, const FString& /*ErrorMsg*/);
+DECLARE_MULTICAST_DELEGATE(FOnJoinSesisonFailed);
 
 UCLASS()
 class CRUNCH_API UCGameInstance : public UGameInstance
@@ -39,7 +41,8 @@ public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName);
 	void CancelSessionCreation();
 	void StartGlobalSessionSearch();
-	
+
+	FOnJoinSesisonFailed OnJoinSessionFailed;
 private:
 	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SesisonSearchId);
 	void StartFindingCreatedSession(const FGuid& SessionSearchId);
@@ -60,6 +63,7 @@ private:
 	void FindCreatedSessionTimeout();
 	void FindCreateSessionCompleted(bool bWasSuccessful);
 	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult);
+	void JoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type JoinResult, int Port);
 
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 	/********************************/
