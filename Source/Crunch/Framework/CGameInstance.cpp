@@ -105,15 +105,49 @@ void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Creating and Joining Session %s"), *NewSessionName.ToString());
 	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
-	FGuid SessionSearchGuid = FGuid::NewGuid();
+	FGuid SessioinSearchId = FGuid::NewGuid();
 
 	FString CoordinatorURL = UCNetStatics::GetCoordinatorURL();
-	UE_LOG(LogTemp, Warning, TEXT("Coordinator URL: %s"), *CoordinatorURL);
+
+	FString URL = FString::Printf(TEXT("%s/Sessions"), *CoordinatorURL);
+	UE_LOG(LogTemp, Warning, TEXT("URL: %s"), *URL);
+
+	Request->SetURL(URL);
+	Request->SetVerb("POST");
+
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+	JsonObject->SetStringField(UCNetStatics::GetSessionNameKey().ToString(), NewSessionName.ToString());
+	JsonObject->SetStringField(UCNetStatics::GetSessionSearchIdKey().ToString(), SessioinSearchId.ToString());
+
+	FString RequestBoby;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBoby);
+	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+
+	Request->SetContentAsString(RequestBoby);
+	Request->OnProcessRequestComplete().BindUObject(this, &UCGameInstance::SessionCreationRequestCompleted, SessioinSearchId);
+	
+	if (!Request->ProcessRequest())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sesison Creation Request Failed Right Away!"))
+	}
 }
 
 void UCGameInstance::CancelSessionCreation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Cancelling Session Creation"))
+}
+
+void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SesisonSearchId)
+{
+	if (!bConnectedSuccessfully)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Connection responded with connection was not successful!"))
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Connection to Coordinator Successfully!"))
 }
 
 void UCGameInstance::PlayerJoined(const FUniqueNetIdRepl& UniqueId)
