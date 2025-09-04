@@ -29,6 +29,13 @@ private:
 	void LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
 
 	FDelegateHandle LoggingInDelegateHandle;
+
+	/*************************************/
+	/* Client Session Creation and Search */
+	/*************************************/
+public:
+	void RequestCreateAndJoinSession(const FName& NewSessionName);
+	void CancelSessionCreation();
 	
 
 	/********************************/

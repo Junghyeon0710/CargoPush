@@ -35,6 +35,25 @@ private:
 	class UWidget* MainWidgetRoot;
 
 	/******************************/	
+	/*           Session           */
+	/******************************/
+
+	UPROPERTY(meta=(BindWidget))
+	class UButton* CreateSessionBtn;
+
+	UPROPERTY(meta=(BindWidget))
+	class UEditableText* NewSessionNameText;
+
+	UFUNCTION()
+	void CreateSessionBtnClicked();
+
+	UFUNCTION()
+	void CancelSessionCreation();
+	
+	UFUNCTION()
+	void NewSessionNameTextChanged(const FText& NewText);
+
+	/******************************/	
 	/*           Login             */
 	/******************************/	
 private:
