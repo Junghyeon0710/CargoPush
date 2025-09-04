@@ -3,8 +3,10 @@
 
 #include "CGameInstance.h"
 
+#include "HttpModule.h"
 #include "OnlineSessionSettings.h"
 #include "Crunch/Network/CNetStatics.h"
+#include "Interfaces/IHttpRequest.h"
 
 void UCGameInstance::StartMatch()
 {
@@ -95,13 +97,18 @@ void UCGameInstance::LoginCompleted(int NumOfLocalPlayer, bool bWasSuccessful, c
 	}
 	else
 	{
-		OnLoginCompleted.Broadcast(false, "", "Ca't find the Identity Pointer");
+		OnLoginCompleted.Broadcast(false, "", "Can't find the Identity Pointer");
 	}
 }
 
 void UCGameInstance::RequestCreateAndJoinSession(const FName& NewSessionName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Creating and Joining Session %s"), *NewSessionName.ToString());
+	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
+	FGuid SessionSearchGuid = FGuid::NewGuid();
+
+	FString CoordinatorURL = UCNetStatics::GetCoordinatorURL();
+	UE_LOG(LogTemp, Warning, TEXT("Coordinator URL: %s"), *CoordinatorURL);
 }
 
 void UCGameInstance::CancelSessionCreation()
