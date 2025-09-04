@@ -38,6 +38,7 @@ private:
 public:
 	void RequestCreateAndJoinSession(const FName& NewSessionName);
 	void CancelSessionCreation();
+	void StartGlobalSessionSearch();
 	
 private:
 	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SesisonSearchId);
@@ -57,6 +58,10 @@ private:
 
 	void FindCreatedSession(FGuid SessionSearchId);
 	void FindCreatedSessionTimeout();
+	void FindCreateSessionCompleted(bool bWasSuccessful);
+	void JoinSessionWithSearchResult(const class FOnlineSessionSearchResult& SearchResult);
+
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 	/********************************/
 	/*          Session Server      */
 	/********************************/
