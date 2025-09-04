@@ -41,7 +41,22 @@ public:
 	
 private:
 	void SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SesisonSearchId);
+	void StartFindingCreatedSession(const FGuid& SessionSearchId);
+	void StopAllSessionFindings();
+	void StopFindingCreatedSession();
+	void StopGlobalSessionSearch();
 
+	FTimerHandle FindCreatedSesisonTimerHandle;
+	FTimerHandle FindCreatedSesisonTimeoutTimerHanle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
+	float FindCreatedSessionSearchInterval = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Session Search")
+	float FindCreatedSessionTimeoutDuration = 60.f;
+
+	void FindCreatedSession(FGuid SessionSearchId);
+	void FindCreatedSessionTimeout();
 	/********************************/
 	/*          Session Server      */
 	/********************************/
