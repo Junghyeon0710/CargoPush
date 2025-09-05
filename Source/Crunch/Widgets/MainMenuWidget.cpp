@@ -110,7 +110,10 @@ void UMainMenuWidget::JoinSessionBtnClicked()
 	if (CGameInstance && !CurrentSelectedSessionId.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Joining Session id :%s"), *CurrentSelectedSessionId);
-		CGame
+		if (CGameInstance->JoinSessionWithId(CurrentSelectedSessionId))
+		{
+			SwitchToWaitingWidget(FText::FromString("Joining"), false);
+		}
 	}
 	else
 	{

@@ -154,6 +154,28 @@ void UCGameInstance::StartGlobalSessionSearch()
 	GetWorld()->GetTimerManager().SetTimer(GlobalSessionSearchTimerHandle, this, &UCGameInstance::FindGlobalSessions, GlobalSessionSearchInterval, true,0.f);
 }
 
+bool UCGameInstance::JoinSessionWithId(const FString& SessionIdStr)
+{
+	if (SessionSearch.IsValid())
+	{
+		const FOnlineSessionSearchResult* SearchResult = SessionSearch->SearchResults.FindByPredicate([=](const FOnlineSessionSearchResult& Result)
+		{
+			return Result.GetSessionIdStr() == SessionIdStr;
+		});
+
+		if (SearchResult)
+		{
+			JoinSessionWithSearchResult(*SearchResult);
+			return true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Can't find session with id: %s"), *SessionIdStr)
+		}
+	}
+	return false;
+}
+
 void UCGameInstance::SessionCreationRequestCompleted(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully, FGuid SesisonSearchId)
 {
 	if (!bConnectedSuccessfully)
