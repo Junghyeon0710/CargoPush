@@ -14,14 +14,14 @@ UCLASS()
 class CRUNCH_API UMainMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
-public:	
+
+public:
 	virtual void NativeConstruct() override;
 
-	
-	
-	/******************************/	
+
+	/******************************/
 	/*           Main             */
-	/******************************/	
+	/******************************/
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UWidgetSwitcher* MainSwitcher;
@@ -34,7 +34,7 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UWidget* MainWidgetRoot;
 
-	/******************************/	
+	/******************************/
 	/*           Session           */
 	/******************************/
 
@@ -49,13 +49,32 @@ private:
 
 	UFUNCTION()
 	void CancelSessionCreation();
-	
+
 	UFUNCTION()
 	void NewSessionNameTextChanged(const FText& NewText);
 
-	/******************************/	
+	void JoinSessionFailed();
+
+	void UpdateLobbyList(const TArray<FOnlineSessionSearchResult>& SearchResults);
+
+	UPROPERTY(meta=(BindWidget))
+	class UScrollBox* SessionScrollBox;
+
+	UPROPERTY(meta=(BindWidget))
+	class UButton* JoinSessionBtn;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Session")
+	TSubclassOf<class USessionEntryWidget> SessionEntryWidgetClass;
+
+	FString CurrentSelectedSessionId = "";
+
+	UFUNCTION()
+	void JoinSessionBtnClicked();
+
+	void SessionEntrySelected(const FString& SelectedEntryIdStr);
+	/******************************/
 	/*           Login             */
-	/******************************/	
+	/******************************/
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UWidget* LoginWidgetRoot;
@@ -68,9 +87,9 @@ private:
 
 	void LoginCompleted(bool bWasSuccessful, const FString& PlayerNickname, const FString& ErrorMsg);
 
-	/******************************/	
+	/******************************/
 	/*           Waiting          */
-	/******************************/	
+	/******************************/
 private:
 	UPROPERTY(meta=(BindWidget))
 	class UWaitingWidget* WaitingWidget;
