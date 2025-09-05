@@ -125,3 +125,22 @@ int UCNetStatics::GetCommandlineArgAsInt(const FName& ParamName)
 	FParse::Value(FCommandLine::Get(), *CommandLineArg, OutVal);
 	return OutVal;
 }
+
+FString UCNetStatics::GetTestingURL()
+{
+	FString TestURL = GetCommandlineArgAsString(GetTestingURLKey());
+	UE_LOG(LogTemp, Warning, TEXT("Get Testing URL: %s"), *TestURL)
+	return TestURL;
+}
+
+FName UCNetStatics::GetTestingURLKey()
+{
+	return FName("TESTING_URL");
+}
+
+void UCNetStatics::ReplacePort(FString& OutURLStr, int NewPort)
+{
+	FURL URL(nullptr, *OutURLStr, ETravelType::TRAVEL_Absolute);
+	URL.Port = NewPort;
+	OutURLStr = URL.ToString();
+}
