@@ -55,6 +55,10 @@
 		{
 			"Name": "SocketSubsystemEOS",
 			"Enabled": true
+		},
+		{
+			"Name": "CommonFront",
+			"Enabled": true
 		}
-	]
+    ]
 }

@@ -13,7 +13,7 @@ public class Crunch : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"EnhancedInput", "GameplayAbilities", "GameplayTasks", "GameplayTags", "UMG", "Slate", "SlateCore", "AIModule","Niagara",
-			"OnlineSubsystemUtils", "OnlineSubsystem", "OnlineServicesEOS", "Networking", "Json", "HTTP",
+			"OnlineSubsystemUtils", "OnlineSubsystem", "OnlineServicesEOS", "Networking", "Json", "HTTP","CommonFront"
 		});
 
 		// Uncomment if you are using Slate UI

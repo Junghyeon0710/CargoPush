@@ -82,7 +82,7 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	class UButton* LoginBtn;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void LoginBtnClicked();
 
 	void LoginCompleted(bool bWasSuccessful, const FString& PlayerNickname, const FString& ErrorMsg);

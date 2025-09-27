@@ -82,7 +82,7 @@ TArray<FHitResult> UCGameplayAbility::GetHitResultFromSweepLocationTargetData(co
 
 	IGenericTeamAgentInterface* OwnerTeamInterface = Cast<IGenericTeamAgentInterface>(GetAvatarActorFromActorInfo());
 	
-	for (const TSharedPtr<FGameplayAbilityTargetData> TargetData : TargetDataHandle.Data)
+	for (const TSharedPtr<FGameplayAbilityTargetData>& TargetData : TargetDataHandle.Data)
 	{
 		FVector StartLoc = TargetData->GetOrigin().GetTranslation();
 		FVector EndLoc = TargetData->GetEndPoint();
