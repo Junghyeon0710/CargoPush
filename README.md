@@ -1,4 +1,4 @@
-## Unreal5 : Crunch
+## Unreal5 : Cargo Push
 본 프로젝트는 데디케이티드 서버 기반의 MOBA 멀티플레이 게임입니다. GAS(Gameplay Ability System)을 통해 전투 및 스킬 시스템을 구축하였고, EOS(Epic Online Services)를 활용해 로그인 서버를 연동했습니다. 추가적으로, Python으로 간단한 HTTP 서버를 구현하여 서버-클라 통신 기능을 지원합니다.
 
 
