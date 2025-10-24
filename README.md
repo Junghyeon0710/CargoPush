@@ -14,11 +14,10 @@
   <br>
 
 ## 영상
-- 추후 업로드
+[![영상 썸네일](https://img.youtube.com/vi/SXG5lXZ3jsk/hqdefault.jpg)](https://www.youtube.com/watch?v=SXG5lXZ3jsk)
 
 <br>
 
-## PDF
 
 <br>
 
