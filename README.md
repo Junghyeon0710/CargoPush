@@ -14,7 +14,7 @@
   <br>
 
 ## 영상
-[![영상 썸네일](https://img.youtube.com/vi/SXG5lXZ3jsk/hqdefault.jpg)](https://www.youtube.com/watch?v=SXG5lXZ3jsk)
+[![영상 썸네일](https://img.youtube.com/vi/maqc97zHvSQ/hqdefault.jpg)](https://www.youtube.com/watch?v=maqc97zHvSQ)
 
 <br>
 
