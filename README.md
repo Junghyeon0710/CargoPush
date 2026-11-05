@@ -10,6 +10,8 @@
 - 인원 : 개인 개발                      
 - 아키텍처 : GAS, EOS, Asset Manager      
 - 네트워크 : RPC, Handle System, Replication , Dedicated Server , HTTP
+- PDF : [PDF 포트폴리오](https://github.com/Junghyeon0710/CargoPush/raw/master/안중현_Portfolio_v4.pdf)
+
 
   <br>
 
